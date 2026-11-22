@@ -1,0 +1,107 @@
+# Protocol
+
+Written and committed before any counted run. Anything changed after the first run is added under
+"Amendments" with its date, never edited in place.
+
+## Question
+
+Experiment 5 of "Sparks of Weight-Space Programming" had GPT-6 Astra write every weight of a 600-32-32-6 network
+in one reply, with no tools. The network averaged 517.4 points at MinAtar Breakout. Can Claude models do the
+same? How often do they manage it, and how well?
+
+## Task
+
+- Prompt: `lm_understand-logs/exp5_write_from_scratch/runs/breakout/reply/prompt.txt`, unchanged. sha256
+  `766ee251d59a7893ed86d5eaea99ddb847529ab2092afc69f90f55fb0a22e876`.
+- System prompt: "Answer the user's request." (the paper's).
+- One reply, no tools, output capped at 128,000 tokens.
+
+## Models and runs
+
+- `claude-haiku-5-5`, `claude-sonnet-5-5`, `claude-opus-5-5` and `claude-fable-5-2`, all at effort xhigh
+  (Astra's setting). 10 runs each, started round robin across models, 4 at a time.
+- Optional, only if usage allows after the main batch: 5 runs of Fable 5.2 at effort high and 5 of Opus 5.5 at
+  effort max. These are reported as a separate arm.
+
+## How a run is made (`run.py`)
+
+- The command is `claude -p` (Claude Code 2.1.330) with these flags:
+  - `--tools ""`
+  - `--system-prompt "Answer the user's request."`
+  - `--setting-sources ""`
+  - `--strict-mcp-config`
+  - `--disable-slash-commands`
+  - `--no-session-persistence`
+  - `--thinking-display summarized`
+  - `--effort <effort>`
+- The prompt goes on stdin. The working directory is an empty folder outside any git repository.
+- Environment: `CLAUDE_CODE_MAX_OUTPUT_TOKENS=128000`. Refusal retries and the fallback model are turned off
+  (`CLAUDE_CODE_DISABLE_REFUSAL_RETRY=1`, `CLAUDE_CODE_DISABLE_REFUSAL_FALLBACK=1`).
+- **One reply.** When a reply hits the output cap, Claude Code continues it in a new turn on its own. It sends
+  "Output token limit hit. Resume directly…", or, if the cap was hit while the model was still thinking, a
+  message telling it to reason much more briefly. Claude Code has no setting to turn this off, so `run.py` stops
+  the process as soon as that turn starts. The reply up to that point is what gets scored.
+- **Known difference from the paper.** Claude Code adds about 650 tokens of its own context to every request:
+  - the date, the working folder, the platform and the model's name;
+  - a note on handling untrusted files;
+  - a note about the account.
+
+  It can't be removed when using a subscription login. It is the same for every model and every run.
+
+## Reading a reply (`score.py`)
+
+- The prompt's rules apply: only the last edits block is read, statements are applied in order, and a
+  statement that can't be read is skipped.
+- Three cases the rules leave open are settled here, in advance:
+  1. A flat list with as many values as the block has entries is reshaped to fit the block.
+  2. Exponent notation (`1e-3`) counts as a number.
+  3. A reply that ends inside an edits block keeps the statements written before the cut.
+- Check: reading the paper's three replies gives its released networks exactly (`score.py --selftest`).
+
+## Score
+
+- MinAtar 1.0.15 Breakout, difficulty ramping on, sticky actions 0.1.
+- 1,000 episodes. Episode k is seeded with k (k = 0…999), the same for every network.
+- Actions are sampled from softmax(logits). Episodes are cut at 10,000 steps.
+- Reported for each network: mean ± standard error.
+- Check: Astra's released network scores 502.9 ± 7.8 under this scorer. The paper reports 517.4 ± 7.4.
+
+## Outcomes
+
+| Outcome | Meaning |
+|---|---|
+| `ok` | The reply ended normally. |
+| `cut_off` | The reply hit the 128K output cap. |
+| `refused` | A refusal, a safety stop, or an answer from another model. |
+| `interrupted` | Claude Code stopped the reply for some other reason. |
+| `infra` | No reply at all (usage limit, network or server error). |
+
+- Only `infra` runs are retried, up to 3 times, and they are not counted.
+- Every counted run is scored as written. A reply without an edits block is scored as the all-zero network,
+  which plays uniformly at random.
+
+## Baselines (measured before any Claude run)
+
+| Baseline | Score |
+|---|---|
+| All-zero network (uniform random play) | 0.54 ± 0.02 |
+| Rule: move the paddle toward the ball's column | 8.37 ± 0.28 |
+| PPO, same network, 100M steps (from the paper) | 15.8 |
+| PPO, same network, 500M steps (from the paper) | 25.3 |
+| Astra's hand-written network (paper / this scorer) | 517.4 / 502.9 |
+
+## Reported
+
+- **Every run:** outcome, score ± SE, output tokens (thinking and text), wall time, and Claude Code's
+  API-equivalent cost.
+- **Per model:**
+  - median and range of scores;
+  - how many runs beat PPO at 500M steps (25.3);
+  - how many beat the rule (8.37);
+  - how many are within 3 SE of Astra's network;
+  - outcome counts.
+- No run is dropped, or run again, because of its result.
+
+## Amendments
+
+None yet.

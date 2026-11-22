@@ -1,0 +1,11 @@
+{
+ "source": "lm_understand-logs/exp5_write_from_scratch/networks/breakout/hand.npz",
+ "game": "breakout",
+ "mean": 502.88,
+ "se": 7.75,
+ "episodes": 1000,
+ "mean_length": 7188.4,
+ "hit_step_cap": 517,
+ "min": 1.0,
+ "max": 821.0
+}

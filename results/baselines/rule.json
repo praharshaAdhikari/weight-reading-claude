@@ -1,0 +1,11 @@
+{
+ "source": "rule",
+ "game": "breakout",
+ "mean": 8.37,
+ "se": 0.28,
+ "episodes": 1000,
+ "mean_length": 98.0,
+ "hit_step_cap": 0,
+ "min": 0.0,
+ "max": 62.0
+}

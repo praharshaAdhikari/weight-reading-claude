@@ -1,0 +1,11 @@
+{
+ "source": "zero",
+ "game": "breakout",
+ "mean": 0.54,
+ "se": 0.02,
+ "episodes": 1000,
+ "mean_length": 11.5,
+ "hit_step_cap": 0,
+ "min": 0.0,
+ "max": 5.0
+}
