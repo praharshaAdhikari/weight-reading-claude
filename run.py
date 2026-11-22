@@ -71,10 +71,12 @@ def read_events(path, model_id):
         elif t == "assistant":
             m = e.get("message") or {}
             who = m.get("model")
-            if who and who not in rec["answered_by"]:
-                rec["answered_by"].append(who)
             if e.get("error"):
                 rec["flags"].append(f"error:{e['error']}")
+            if who == "<synthetic>":  # Claude Code's own error text (usage limit, lost connection), not a model
+                continue
+            if who and who not in rec["answered_by"]:
+                rec["answered_by"].append(who)
             for c in m.get("content") or []:
                 if c.get("type") == "text":
                     (texts if who == model_id else other).append(c.get("text", ""))
@@ -93,6 +95,8 @@ def read_events(path, model_id):
 
 def outcome(rec, model_id):
     r, flags, inj = rec["result"] or {}, " ".join(rec["flags"]), rec["injected"] or ""
+    if not inj and any(f.startswith("error:") and "max_output_tokens" not in f for f in rec["flags"]):
+        return "infra"  # usage limit, server or connection error: no complete reply, retried
     if ("refusal" in flags or (r.get("safety_stops") or 0) > 0 or r.get("stop_reason") == "refusal"
             or "safety" in inj or any(m != model_id for m in rec["answered_by"])):
         return "refused"
@@ -124,6 +128,9 @@ def guard(a):
             time.sleep(five["resetsAt"] - now + 120)
             usage.pop("five_hour", None)
             continue
+        if week and week["resetsAt"] <= now:  # reading from before the reset
+            usage.pop("seven_day", None)
+            continue
         if week:
             ends_soon = week["resetsAt"] <= a.resume_before  # tonight's week: its leftover expires anyway
             cap = a.weekly_cap_now if ends_soon else a.weekly_cap
@@ -144,7 +151,7 @@ def run_one(a, label, model):
     run_dir = HERE / "runs" / a.game / label
     with lock:
         run_dir.mkdir(parents=True, exist_ok=True)
-        nn = f"{len(list(run_dir.glob('[0-9][0-9]'))):02d}"
+        nn = f"{max((int(p.name) for p in run_dir.glob('[0-9][0-9]')), default=-1) + 1:02d}"
         d = run_dir / nn
         d.mkdir()
     log(f"start  {label}/{nn}")
@@ -187,6 +194,12 @@ def run_one(a, label, model):
     log(f"done   {label}/{nn}  {rec['outcome']}  {rec['wall_s'] / 60:.1f} min  {spent}  {pct}  {' '.join(rec['flags'])}")
     if rec["outcome"] == "infra":
         return False
+    score_run(a, label, d)
+    return True
+
+
+def score_run(a, label, d):
+    nn = d.name
     with score_lock:  # one scoring job at a time; it uses --workers processes
         s = subprocess.run([str(HERE / ".venv" / "bin" / "python"), str(HERE / "score.py"), str(d / "answer.md"),
                             "--game", a.game, "--save", str(d / "net.npz"), "--out", str(d / "score.json"),
@@ -198,7 +211,6 @@ def run_one(a, label, model):
         rd = sc["reading"]
         log(f"score  {label}/{nn}  {sc['mean']} ± {sc['se']}  (edits block: {rd['block']}, "
             f"statements read {rd['applied']}/{rd['statements']}{', cut off' if rd['cut_off'] else ''})")
-    return True
 
 
 def main():
@@ -231,6 +243,12 @@ def main():
             done = sum(o in COUNTED for o in existing(HERE / "runs" / a.game / label).values())
             if k >= done:
                 jobs.put((label, model, 0))
+    for model in a.models.split(","):  # counted runs a stopped batch left without a score
+        label = model if a.effort == "xhigh" else f"{model}-{a.effort}"
+        for nn, o in existing(HERE / "runs" / a.game / label).items():
+            d = HERE / "runs" / a.game / label / nn
+            if o in COUNTED and not (d / "score.json").exists():
+                score_run(a, label, d)
     total = jobs.qsize()
     log(f"batch: {total} runs to do ({a.models}, target {a.target}, effort {a.effort}, {a.claude_version}, "
         f"prompt sha256 {a.prompt_sha[:12]})")
@@ -246,7 +264,12 @@ def main():
             if not guard(a):
                 stopped.set()
                 return
-            if run_one(a, label, model):
+            try:
+                ok = run_one(a, label, model)
+            except Exception as e:  # never lose a job silently
+                log(f"error  {label}: {type(e).__name__}: {e}")
+                ok = False
+            if ok:
                 finished.append(label)
             elif tries < 2:
                 time.sleep(300)

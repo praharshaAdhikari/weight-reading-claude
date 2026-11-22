@@ -104,4 +104,18 @@ same? How often do they manage it, and how well?
 
 ## Amendments
 
-None yet.
+### 1. 2026-11-22, before any Claude reply was scored, after an independent code review
+
+Reading:
+- A reply cut off inside an edits block also drops its last, unfinished line, which may stop mid-number.
+- A list may start on the line after `=`.
+- Numbers must be plain decimals: `0x10` and `1_000` are not read.
+- A statement whose result has an absolute value over 1e6 is skipped. This covers repeated `*=`, which could
+  otherwise reach inf.
+
+Harness:
+- An error message from Claude Code itself (a usage limit or a lost connection) counts as `infra`, not
+  `refused`.
+- A counted run left without a score is scored when the batch resumes.
+
+No result was known when these were changed.

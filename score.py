@@ -22,6 +22,7 @@ NPZ = {"W1": "actor/dense1/kernel", "b1": "actor/dense1/bias", "W2": "actor/dens
        "b2": "actor/dense2/bias", "W3": "actor/logits/kernel", "b3": "actor/logits/bias"}
 OPS = {ast.Add: np.add, ast.Sub: np.subtract, ast.Mult: np.multiply}
 MAX_STEPS = 10_000
+DECIMAL = r"(\d+\.?\d*|\.\d+)([eE][-+]?\d+)?"
 
 
 # ---------- reading a reply ----------
@@ -33,7 +34,9 @@ def last_edits_block(text):
         return None, False
     body = text[starts[-1]:]
     end = re.search(r"^[ \t]*```", body, re.M)
-    return (body, True) if end is None else (body[:end.start()], False)
+    if end is None:  # cut off: drop the last line, which may stop mid-number
+        return body[:body.rfind("\n") + 1], True
+    return body[:end.start()], False
 
 
 def split_statements(block):
@@ -49,7 +52,7 @@ def split_statements(block):
             buf, depth = [], 0
         buf.append(code)
         depth += code.count("[") - code.count("]")
-        if depth <= 0:
+        if depth <= 0 and not code.endswith("="):  # a list may also start on the line after '='
             out.append(" ".join(buf))
             buf, depth = [], 0
     if buf:
@@ -89,6 +92,9 @@ def apply_statement(net, stmt):
         raise ValueError(f"{name} takes {len(SHAPES[name])} indices")
     idx = tuple(slice(*(None if x is None else as_index(x) for x in (p.lower, p.upper, p.step)))
                 if isinstance(p, ast.Slice) else as_index(p) for p in parts)
+    src = ast.get_source_segment(stmt, s.value) or ""
+    if not all(re.fullmatch(DECIMAL, t) for t in re.findall(r"(?:\d|\.\d)[0-9A-Za-z_.]*(?:(?<=[eE])[-+]\d+)?", src)):
+        raise ValueError("not a plain decimal number")  # e.g. 0x10, 1_000
     v = ast.literal_eval(s.value)
     if not numbers(v):
         raise ValueError("value is not a number or a list of numbers")
@@ -102,7 +108,10 @@ def apply_statement(net, stmt):
             v = v.reshape(shape)  # a flat list with as many values as entries
         else:
             raise ValueError(f"{v.shape} values for a block of shape {shape}")
-    net[name][idx] = v if op is None else op(block, v)
+    new = v if op is None else op(block, v)
+    if not np.all(np.abs(new) <= 1e6):
+        raise ValueError("result |value| > 1e6")  # repeated *= could reach inf and NaN logits
+    net[name][idx] = new
 
 
 def read_reply(text):
@@ -212,6 +221,11 @@ def selftest():
     assert net["W1"][0, 0] == 0 and net["W1"][12, 0] == 2.5 and net["W1"][4, 3] == 2 and net["b1"][3] == -1
     assert net["W1"][483, 0] == net["W1"][543, 0] == 1 and net["W1"][423, 0] == 0
     assert net["W2"][1, 1] == 2 and net["W3"][5, 2] == 2 and net["b3"][0] == 7 and net["b2"][0] == 0
+    net, rep = read_reply("```edits\nb1[0:3] =\n  [1, 2, 3]\nb1[3] = 0x10\nb1[4] = 1_000\nb1[5] = 1e-3\n"
+                          "b2[0] = 1e6\nb2[0] *= 10\nb2[1] = -415\nb2[2] = -4")
+    assert (rep["statements"], rep["applied"], rep["cut_off"]) == (7, 4, True), rep
+    assert list(net["b1"][:6]) == [1, 2, 3, 0, 0, np.float32(1e-3)] and net["b2"][0] == 1e6 and net["b2"][1] == -415
+    assert net["b2"][2] == 0  # the cut last line is dropped
     print("example block: ok")
     for game in ("breakout", "seaquest", "asterix"):
         net, rep = read_reply((EXP5 / "runs" / game / "reply" / "answer.md").read_text())
