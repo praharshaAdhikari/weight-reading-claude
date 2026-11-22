@@ -223,7 +223,7 @@ def main():
     ap.add_argument("--workers", type=int, default=4, help="processes for scoring")
     ap.add_argument("--timeout", type=int, default=3 * 3600, help="seconds per run")
     ap.add_argument("--five-hour-cap", type=float, default=0.95)
-    ap.add_argument("--weekly-cap-now", type=float, default=0.97, help="cap before the current week resets")
+    ap.add_argument("--weekly-cap-now", type=float, default=1.0, help="cap before the current week resets")
     ap.add_argument("--weekly-cap", type=float, default=0.50, help="cap after the weekly reset")
     ap.add_argument("--resume-before", default="2026-11-23T06:00",
                     help="wait for a weekly reset only if it comes before this time")

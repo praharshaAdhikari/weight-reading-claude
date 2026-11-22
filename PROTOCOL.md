@@ -119,3 +119,12 @@ Harness:
 - A counted run left without a score is scored when the batch resumes.
 
 No result was known when these were changed.
+
+### 2. 2026-11-23 00:10, after the pilot (Haiku and Fable cut off with no network, Opus 57.2)
+
+- New arm, added after seeing pilot results and reported as such: **Haiku 5.5 at effort high, 10 runs.** The
+  128K output cap is already the maximum for every model, so a lower effort is the only way to leave Haiku room
+  to write. The xhigh arms are unchanged.
+- Tonight's weekly-usage cap is raised from 97% to 100%, since that usage expires at the 05:45 reset.
+- The batch was restarted to apply this. The four runs in flight were stopped about 3 minutes in, before any
+  output, and moved to `runs/_stopped_by_restart/`. They are not counted; their slots are run again.
