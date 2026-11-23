@@ -117,17 +117,18 @@ def dots(out):
     plt.rcParams.update({"font.family": "Open Sans", "font.size": 10.5, "axes.edgecolor": GRID,
                          "text.hinting": "no_hinting", "text.hinting_factor": 1,
                          "xtick.color": MUTED, "ytick.color": MUTED, "axes.labelcolor": MUTED})
-    fig, axs = plt.subplots(2, 2, figsize=(12, 9.2), dpi=200, facecolor=SURFACE, sharex=True, sharey=True,
-                            gridspec_kw={"hspace": 0.42, "wspace": 0.12})
+    BG, CARD = "#f3f2ee", "#ffffff"  # page tint, so each panel reads as its own white card
+    fig, axs = plt.subplots(2, 2, figsize=(12, 9.6), dpi=200, facecolor=BG, sharex=True, sharey=True,
+                            gridspec_kw={"hspace": 0.55, "wspace": 0.3})
     CAP0, CAP1 = 134, 166  # the column past the cap, in thousands of tokens
     for ax, (key, model, color) in zip(axs.flat, MODELS):
         arms = [(e, mk, filled, runs) for e, mk, filled in EFFORTS if (runs := counted_runs(f"{key}-{e}"))]
-        ax.set_facecolor(SURFACE)
+        ax.set_facecolor(CARD)
         ax.tick_params(length=0, which="both")
         for side in ("top", "right", "left"):
             ax.spines[side].set_visible(False)
         ax.set_yscale("log")
-        ax.set_ylim(0.3, 900)
+        ax.set_ylim(0.3, 1600)  # headroom so the best-score label clears the subtitle
         ax.set_xlim(0, CAP1)
         for v in (1, 10, 100):
             ax.axhline(v, color=GRID, lw=0.6, zorder=0)
@@ -136,8 +137,7 @@ def dots(out):
                 transform=ax.transData)
         for v, name in REFS:
             ax.axhline(v, color=TRAIL, lw=1, ls=(0, (5, 4)), zorder=1)
-            if ax in axs[:, 1]:
-                ax.text(CAP1 + 2, v, name, va="center", fontsize=8.5, color=MUTED, clip_on=False)
+            ax.text(CAP1 + 2, v, name, va="center", fontsize=8.5, color=MUTED, clip_on=False)
         counts = " · ".join(f"{e} {sum(r['kind'] == 'wrote' for r in runs)}/{len(runs)}" for e, _, _, runs in arms)
         ax.set_title(model, loc="center", fontsize=12.5, fontweight="semibold", color=INK, pad=20)
         ax.text(0.5, 1.02, f"finished: {counts}", transform=ax.transAxes, ha="center", fontsize=9, color=MUTED)
@@ -145,7 +145,7 @@ def dots(out):
         fin = [(e, mk, f, r) for e, mk, f, runs in arms for r in runs if r["tokens"] is not None]
         for e, mk, f, r in fin:
             ax.scatter(r["tokens"] / 1000, max(r["score"], 0.3), marker=mk, edgecolors=color,
-                       facecolors=color if f else SURFACE, clip_on=False, **m)  # 0.00 (sonnet-high/04) on the floor
+                       facecolors=color if f else CARD, clip_on=False, **m)  # 0.00 (sonnet-high/04) on the floor
         if fin:  # the panel's best network, named
             e, _, _, b = max(fin, key=lambda t: t[3]["score"])
             ax.annotate(f"{b['score']:.0f}", (b["tokens"] / 1000, b["score"]), xytext=(0, 9),
@@ -156,7 +156,7 @@ def dots(out):
             cut = [r for r in runs if r["tokens"] is None]
             for i, r in enumerate(cut):
                 ax.scatter(CAP0 + 5 + (i % 5) * 5.5, 0.54 * 1.42 ** (row + i // 5), marker=">", edgecolors=color,
-                           facecolors=color if f else SURFACE, **dict(m, s=34))
+                           facecolors=color if f else CARD, **dict(m, s=34))
             if cut:
                 row += -(-len(cut) // 5)
                 ax.text((CAP0 + CAP1) / 2, 0.54 * 1.42 ** (row - 0.45), f"{len(cut)} {e}", ha="center", va="bottom",
@@ -165,13 +165,12 @@ def dots(out):
         ax.set_yticks([0.5, 1, 5, 10, 50, 100, 500], ["0.5", "1", "5", "10", "50", "100", "500"])
         ax.yaxis.set_minor_formatter(matplotlib.ticker.NullFormatter())
         ax.set_xticks([0, 32, 64, 96, 128], ["0", "32K", "64K", "96K", "128K"])
-        ax.tick_params(labelbottom=True)
-    for ax in axs[1]:
-        ax.set_xlabel("output tokens, almost all thinking", labelpad=8)
-    for ax in axs[:, 0]:
-        ax.set_ylabel("score, mean of 1,000 games (log)")
+        ax.tick_params(labelbottom=True, labelleft=True)
+    # axis names once for the figure, outside the cards, so all four cards hold the same things
+    fig.text(0.5, 0.118, "output tokens, almost all thinking", ha="center", color=MUTED)
+    fig.text(0.012, 0.53, "score, mean of 1,000 games (log)", rotation=90, va="center", color=MUTED)
     for e, mk, f in EFFORTS:
-        axs[0, 0].scatter([], [], marker=mk, edgecolors=INK, facecolors=INK if f else SURFACE, s=46, linewidths=1.4,
+        axs[0, 0].scatter([], [], marker=mk, edgecolors=INK, facecolors=INK if f else CARD, s=46, linewidths=1.4,
                           label=e)
     axs[0, 0].scatter([], [], marker=">", edgecolors=INK, facecolors=INK, s=34, label="cut off at the cap (no network)")
     fig.legend(loc="upper center", bbox_to_anchor=(0.5, 0.995), ncol=4, frameon=False, fontsize=9.5)
@@ -182,8 +181,21 @@ def dots(out):
              " network (random play, 0.54).\nDashed lines: random play, the follow-the-ball rule, PPO after 500M"
              " steps, GPT-6 Astra. Claude via claude -p, one reply; MinAtar Breakout.", fontsize=8, color=MUTED,
              va="top", linespacing=1.5)
-    fig.subplots_adjust(left=0.07, right=0.93, top=0.89, bottom=0.165)
-    fig.savefig(out, facecolor=SURFACE)
+    fig.subplots_adjust(left=0.07, right=0.915, top=0.86, bottom=0.2)
+    # cards: one rounded white box per panel, the same overhang on every panel (the largest one needed)
+    fig.canvas.draw()
+    inv, rend = fig.transFigure.inverted(), fig.canvas.get_renderer()
+    boxes = [(ax.get_position(), ax.get_tightbbox(rend).transformed(inv)) for ax in axs.flat]
+    padx, pady = 0.014, 0.016
+    L = max(p.x0 - t.x0 for p, t in boxes) + padx
+    R = max(t.x1 - p.x1 for p, t in boxes) + padx
+    B = max(p.y0 - t.y0 for p, t in boxes) + pady
+    T = max(t.y1 - p.y1 for p, t in boxes) + pady
+    for p, _ in boxes:
+        fig.patches.append(matplotlib.patches.FancyBboxPatch(
+            (p.x0 - L, p.y0 - B), p.width + L + R, p.height + B + T, transform=fig.transFigure, zorder=-1,
+            boxstyle="round,pad=0,rounding_size=0.012", facecolor=CARD, edgecolor=GRID, lw=1))
+    fig.savefig(out, facecolor=BG)
 
 
 CHANNELS = [(0, "paddle"), (3, "ball"), (4, "ball's last cell")]  # the only inputs Breakout fills, besides bricks
