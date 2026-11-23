@@ -136,3 +136,11 @@ No result was known when these were changed.
 - After the weekly reset, Claude Code's weekly reading stayed at 0%. Measured last night, one weekly point is
   about $4.70 of API-equivalent usage, so this arm (at most about $35) is around 7 points and cannot reach the cap
   even if the reading stays wrong.
+
+## Amendment 4 (2026-11-23 09:05)
+Added after seeing the results of every arm above, so these arms are exploratory, not pre-registered.
+- **Why:** at effort high, Haiku finished 9 of 10 and Fable 4 of 5, against 0 of 10 each at xhigh. Opus finished
+  4 of 10 at xhigh and 0 of 5 at max, and had no runs at high. Sonnet ran only at xhigh.
+- **What:** effort high for Fable 5.2 (5 more runs, making 10), Opus 5.5 (10 runs) and Sonnet 5.5 (10 runs).
+  Everything else as in the protocol and Amendment 1. Same 60% caps for both usage windows.
+- **Expected usage:** about 10 weekly points (about $45 of API-equivalent cost).
