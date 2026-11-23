@@ -94,3 +94,19 @@ Wording changed in the draft: "tenfold" → "ninefold" (57.2 vs 502.7/510.4); "S
 "Haiku's are no better" → "similar; its best scored 20"; Fable high "best result" → "most reliable result" (Opus xhigh has the
 single highest score); Fable xhigh wording now says it hit the limit while thinking. The catch-rate table now uses
 opus-xhigh/03 (510.4) for "Opus, best" and adds Fable's best.
+
+## Added with the review fixes (2026-11-23)
+| Claim | Value | Source |
+|---|---|---|
+| Original authors and date | Rikiya Takehi, Jayden Teoh, Alex Zhang, Omar Khattab; MIT CSAIL; 2 Nov 2026 | the post, https://rikiyat.github.io/blog/weight-space-programming/ (research) |
+| Haiku high, tokens of finished runs | median 70,343; range 16,903 to 115,737 (9 runs) | runs.json |
+| Haiku 0 → 9 of 10, Fisher exact two-sided | p = 0.0001 (same table as Fable) | computed |
+| Sonnet high scored 0 | sonnet-high/04, 0.00 | runs.json |
+| Sonnet xhigh weakest finished | 26.74 | runs.json |
+| Games that hit the 10,000-step cap | Astra 517 of 1,000; Claude's five 500+ networks 703 to 780 | `results/baselines/astra.json`; runs.json `games_at_step_cap` |
+| sonnet-xhigh/04 misses less often than Astra | 77 misses / 102,727 balls vs 112 / 103,419 | `results/catch_rate.txt` |
+| opus-xhigh/11 uses 10 of 32 hidden units | 22 all-zero columns in `actor/dense1/kernel` | `runs/breakout/opus-xhigh/11/net.npz` |
+| What units 2–9 do | 4 directions × (paddle left / right of the landing zone), wall-folded paths | `runs/breakout/opus-xhigh/11/answer.md` |
+| opus-xhigh run numbers go to 11 | slots 05 and 09 were `infra` and rerun | `runs/breakout/opus-xhigh/*/run.json` |
+| Replication links | 55 MaceTenth, 57 Sir-Olexander, 307 nihilistau, 484 MatinKhajavi, 504 EphraiemSarabamoun | GitHub repos (research) |
+| MinAtar | Young & Tian 2019, arXiv:1903.03176 | |
