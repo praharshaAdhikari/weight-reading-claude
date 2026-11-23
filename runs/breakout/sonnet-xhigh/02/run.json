@@ -1,0 +1,127 @@
+{
+ "answered_by": [
+  "claude-sonnet-5-5"
+ ],
+ "flags": [],
+ "tools": [],
+ "rate_limit": {
+  "status": "allowed_warning",
+  "resetsAt": 1795392000,
+  "rateLimitType": "seven_day",
+  "utilization": 0.89,
+  "overageStatus": "rejected",
+  "overageDisabledReason": "org_level_disabled",
+  "isUsingOverage": false,
+  "surpassedThreshold": 0.75,
+  "unifiedWindows": {
+   "five_hour": {
+    "utilization": 0.49,
+    "resetsAt": 1795377600,
+    "status": "allowed"
+   },
+   "seven_day": {
+    "utilization": 0.89,
+    "resetsAt": 1795392000,
+    "status": "allowed_warning",
+    "surpassedThreshold": 0.75
+   }
+  },
+  "overageEnabled": false
+ },
+ "result": {
+  "subtype": "success",
+  "is_error": false,
+  "stop_reason": "end_turn",
+  "terminal_reason": "completed",
+  "duration_ms": 788654,
+  "num_turns": 1,
+  "total_cost_usd": 1.1013077,
+  "usage": {
+   "input_tokens": 2,
+   "cache_creation_input_tokens": 0,
+   "cache_read_input_tokens": 4337,
+   "output_tokens": 110087,
+   "output_tokens_details": {
+    "thinking_tokens": 106859
+   },
+   "server_tool_use": {
+    "web_search_requests": 0,
+    "web_fetch_requests": 0
+   },
+   "service_tier": "standard",
+   "cache_creation": {
+    "ephemeral_1h_input_tokens": 0,
+    "ephemeral_5m_input_tokens": 0
+   },
+   "inference_geo": "global",
+   "iterations": [
+    {
+     "input_tokens": 2,
+     "output_tokens": 110087,
+     "cache_read_input_tokens": 4337,
+     "cache_creation_input_tokens": 0,
+     "cache_creation": {
+      "ephemeral_5m_input_tokens": 0,
+      "ephemeral_1h_input_tokens": 0
+     },
+     "type": "message"
+    }
+   ],
+   "speed": "standard",
+   "fallback_credit": null
+  },
+  "modelUsage": {
+   "claude-sonnet-5-5": {
+    "inputTokens": 2,
+    "outputTokens": 110087,
+    "cacheReadInputTokens": 4337,
+    "cacheCreationInputTokens": 0,
+    "webSearchRequests": 0,
+    "costUSD": 1.1013077,
+    "contextWindow": 1000000,
+    "maxOutputTokens": 128000,
+    "thinkingTokens": 106859,
+    "cacheCreationEphemeral5mInputTokens": 0,
+    "cacheCreationEphemeral1hInputTokens": 0,
+    "canonicalModel": "claude-sonnet-5-5",
+    "provider": "firstParty",
+    "costBasis": "list"
+   }
+  },
+  "safety_stops": 0,
+  "api_error_status": null
+ },
+ "injected": null,
+ "init_model": "claude-sonnet-5-5",
+ "model": "claude-sonnet-5-5",
+ "effort": "xhigh",
+ "game": "breakout",
+ "prompt_sha256": "766ee251d59a7893ed86d5eaea99ddb847529ab2092afc69f90f55fb0a22e876",
+ "cmd": [
+  "claude",
+  "-p",
+  "--model",
+  "claude-sonnet-5-5",
+  "--effort",
+  "xhigh",
+  "--thinking-display",
+  "summarized",
+  "--no-session-persistence",
+  "--tools",
+  "",
+  "--system-prompt",
+  "Answer the user's request.",
+  "--setting-sources",
+  "",
+  "--strict-mcp-config",
+  "--disable-slash-commands",
+  "--output-format",
+  "stream-json",
+  "--verbose"
+ ],
+ "exit_code": 0,
+ "wall_s": 790,
+ "started": "2026-11-23T00:21:53.967472",
+ "claude_version": "2.1.330 (Claude Code)",
+ "outcome": "ok"
+}

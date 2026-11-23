@@ -1,0 +1,65 @@
+{
+ "answered_by": [
+  "claude-haiku-5-5"
+ ],
+ "flags": [],
+ "tools": [],
+ "rate_limit": {
+  "status": "allowed_warning",
+  "resetsAt": 1795392000,
+  "rateLimitType": "seven_day",
+  "utilization": 0.89,
+  "overageStatus": "rejected",
+  "overageDisabledReason": "org_level_disabled",
+  "isUsingOverage": false,
+  "surpassedThreshold": 0.75,
+  "unifiedWindows": {
+   "five_hour": {
+    "utilization": 0.46,
+    "resetsAt": 1795377600,
+    "status": "allowed"
+   },
+   "seven_day": {
+    "utilization": 0.89,
+    "resetsAt": 1795392000,
+    "status": "allowed_warning",
+    "surpassedThreshold": 0.75
+   }
+  },
+  "overageEnabled": false
+ },
+ "result": null,
+ "injected": "Output token limit hit. Resume directly \u2014 no apology, no recap of what you were doing. Pick up mid-thought if that is where the cut happened. Break remaining work into smaller pieces.",
+ "init_model": "claude-haiku-5-5",
+ "model": "claude-haiku-5-5",
+ "effort": "xhigh",
+ "game": "breakout",
+ "prompt_sha256": "766ee251d59a7893ed86d5eaea99ddb847529ab2092afc69f90f55fb0a22e876",
+ "cmd": [
+  "claude",
+  "-p",
+  "--model",
+  "claude-haiku-5-5",
+  "--effort",
+  "xhigh",
+  "--thinking-display",
+  "summarized",
+  "--no-session-persistence",
+  "--tools",
+  "",
+  "--system-prompt",
+  "Answer the user's request.",
+  "--setting-sources",
+  "",
+  "--strict-mcp-config",
+  "--disable-slash-commands",
+  "--output-format",
+  "stream-json",
+  "--verbose"
+ ],
+ "exit_code": -9,
+ "wall_s": 519,
+ "started": "2026-11-23T00:21:27.547387",
+ "claude_version": "2.1.330 (Claude Code)",
+ "outcome": "cut_off"
+}

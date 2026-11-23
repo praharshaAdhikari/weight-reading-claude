@@ -1,0 +1,35 @@
+{
+ "source": "./runs/breakout/sonnet-high/08/answer.md",
+ "game": "breakout",
+ "reading": {
+  "block": true,
+  "cut_off": false,
+  "statements": 115,
+  "applied": 115,
+  "errors": [],
+  "nonzero": {
+   "W1": 1784,
+   "b1": 15,
+   "W2": 24,
+   "b2": 6,
+   "W3": 6,
+   "b3": 6
+  },
+  "nonzero_total": 1841,
+  "max_abs": {
+   "W1": 136.0,
+   "b1": 220.0,
+   "W2": 4.0,
+   "b2": 8.0,
+   "W3": 7.0,
+   "b3": 21.0
+  }
+ },
+ "mean": 15.79,
+ "se": 0.59,
+ "episodes": 1000,
+ "mean_length": 193.6,
+ "hit_step_cap": 0,
+ "min": 0.0,
+ "max": 116.0
+}

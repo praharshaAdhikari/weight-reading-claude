@@ -1,0 +1,35 @@
+{
+ "source": "./runs/breakout/fable-high/07/answer.md",
+ "game": "breakout",
+ "reading": {
+  "block": true,
+  "cut_off": false,
+  "statements": 100,
+  "applied": 100,
+  "errors": [],
+  "nonzero": {
+   "W1": 818,
+   "b1": 3,
+   "W2": 34,
+   "b2": 8,
+   "W3": 10,
+   "b3": 5
+  },
+  "nonzero_total": 878,
+  "max_abs": {
+   "W1": 272.0,
+   "b1": 484.0,
+   "W2": 8.0,
+   "b2": 28.0,
+   "W3": 20.0,
+   "b3": 80.0
+  }
+ },
+ "mean": 449.86,
+ "se": 9.32,
+ "episodes": 1000,
+ "mean_length": 5463.8,
+ "hit_step_cap": 253,
+ "min": 1.0,
+ "max": 840.0
+}

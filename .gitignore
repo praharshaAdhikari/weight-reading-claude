@@ -3,3 +3,10 @@ __pycache__/
 lm_understand-logs/
 logs/
 clone.log
+
+# private working notes (kept local)
+article/draft.md
+article/notes.md
+article/review-fable.md
+RESUME.md
+paper/

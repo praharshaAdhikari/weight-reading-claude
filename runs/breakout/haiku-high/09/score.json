@@ -1,0 +1,35 @@
+{
+ "source": "./runs/breakout/haiku-high/09/answer.md",
+ "game": "breakout",
+ "reading": {
+  "block": true,
+  "cut_off": false,
+  "statements": 107,
+  "applied": 107,
+  "errors": [],
+  "nonzero": {
+   "W1": 3630,
+   "b1": 20,
+   "W2": 42,
+   "b2": 2,
+   "W3": 2,
+   "b3": 4
+  },
+  "nonzero_total": 3700,
+  "max_abs": {
+   "W1": 33.0,
+   "b1": 12.0,
+   "W2": 40.0,
+   "b2": 1.0,
+   "W3": 20.0,
+   "b3": 5.0
+  }
+ },
+ "mean": 3.1,
+ "se": 0.03,
+ "episodes": 1000,
+ "mean_length": 39.1,
+ "hit_step_cap": 0,
+ "min": 0.0,
+ "max": 9.0
+}

@@ -1,0 +1,66 @@
+{
+ "answered_by": [
+  "claude-fable-5-2"
+ ],
+ "flags": [],
+ "tools": [],
+ "rate_limit": {
+  "status": "allowed",
+  "resetsAt": 1795417800,
+  "rateLimitType": "five_hour",
+  "overageStatus": "rejected",
+  "overageDisabledReason": "org_level_disabled",
+  "isUsingOverage": false,
+  "unifiedWindows": {
+   "five_hour": {
+    "utilization": 0.07,
+    "resetsAt": 1795417800,
+    "status": "allowed"
+   },
+   "seven_day": {
+    "utilization": 0.03,
+    "resetsAt": 1795996800,
+    "status": "allowed"
+   },
+   "seven_day_overage_included": {
+    "utilization": 0.03,
+    "resetsAt": 1795996800,
+    "status": "allowed"
+   }
+  }
+ },
+ "result": null,
+ "injected": "Output token limit hit. Resume directly \u2014 no apology, no recap of what you were doing. Pick up mid-thought if that is where the cut happened. Break remaining work into smaller pieces.",
+ "init_model": "claude-fable-5-2",
+ "model": "claude-fable-5-2",
+ "effort": "high",
+ "game": "breakout",
+ "prompt_sha256": "766ee251d59a7893ed86d5eaea99ddb847529ab2092afc69f90f55fb0a22e876",
+ "cmd": [
+  "claude",
+  "-p",
+  "--model",
+  "claude-fable-5-2",
+  "--effort",
+  "high",
+  "--thinking-display",
+  "summarized",
+  "--no-session-persistence",
+  "--tools",
+  "",
+  "--system-prompt",
+  "Answer the user's request.",
+  "--setting-sources",
+  "",
+  "--strict-mcp-config",
+  "--disable-slash-commands",
+  "--output-format",
+  "stream-json",
+  "--verbose"
+ ],
+ "exit_code": -9,
+ "wall_s": 1325,
+ "started": "2026-11-23T08:06:13.654105",
+ "claude_version": "2.1.330 (Claude Code)",
+ "outcome": "cut_off"
+}

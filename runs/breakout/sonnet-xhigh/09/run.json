@@ -1,0 +1,95 @@
+{
+ "answered_by": [],
+ "flags": [
+  "error:rate_limit"
+ ],
+ "tools": [],
+ "rate_limit": {
+  "status": "rejected",
+  "resetsAt": 1795392000,
+  "rateLimitType": "seven_day",
+  "overageStatus": "rejected",
+  "overageDisabledReason": "org_level_disabled",
+  "isUsingOverage": false,
+  "unifiedWindows": {
+   "five_hour": {
+    "utilization": 0.56,
+    "resetsAt": 1795395600,
+    "status": "allowed"
+   },
+   "seven_day": {
+    "utilization": 1,
+    "resetsAt": 1795392000,
+    "status": "rejected",
+    "surpassedThreshold": 1
+   }
+  }
+ },
+ "result": {
+  "subtype": "success",
+  "is_error": true,
+  "stop_reason": "stop_sequence",
+  "terminal_reason": "api_error",
+  "duration_ms": 710,
+  "num_turns": 1,
+  "total_cost_usd": 0,
+  "usage": {
+   "output_tokens_details": {
+    "thinking_tokens": 0
+   },
+   "input_tokens": 0,
+   "cache_creation_input_tokens": 0,
+   "cache_read_input_tokens": 0,
+   "output_tokens": 0,
+   "server_tool_use": {
+    "web_search_requests": 0,
+    "web_fetch_requests": 0
+   },
+   "service_tier": "standard",
+   "cache_creation": {
+    "ephemeral_1h_input_tokens": 0,
+    "ephemeral_5m_input_tokens": 0
+   },
+   "inference_geo": "",
+   "iterations": [],
+   "speed": "standard",
+   "fallback_credit": null
+  },
+  "modelUsage": {},
+  "safety_stops": 0,
+  "api_error_status": 429
+ },
+ "injected": null,
+ "init_model": "claude-sonnet-5-5",
+ "model": "claude-sonnet-5-5",
+ "effort": "xhigh",
+ "game": "breakout",
+ "prompt_sha256": "766ee251d59a7893ed86d5eaea99ddb847529ab2092afc69f90f55fb0a22e876",
+ "cmd": [
+  "claude",
+  "-p",
+  "--model",
+  "claude-sonnet-5-5",
+  "--effort",
+  "xhigh",
+  "--thinking-display",
+  "summarized",
+  "--no-session-persistence",
+  "--tools",
+  "",
+  "--system-prompt",
+  "Answer the user's request.",
+  "--setting-sources",
+  "",
+  "--strict-mcp-config",
+  "--disable-slash-commands",
+  "--output-format",
+  "stream-json",
+  "--verbose"
+ ],
+ "exit_code": 1,
+ "wall_s": 2,
+ "started": "2026-11-23T02:32:00.595334",
+ "claude_version": "2.1.330 (Claude Code)",
+ "outcome": "infra"
+}
