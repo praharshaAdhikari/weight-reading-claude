@@ -58,6 +58,7 @@ for line in (txt.read_text().splitlines() if txt.exists() else []):
     m = re.match(r"(\S+)\s+score (\S*)\s+catches\s+(\d+) misses\s+(\d+)", line)
     if m:
         name, s, c, mi = m.groups()
+        s = s or {"rule": "8.37", "astra": "502.88"}.get(name)  # baselines: scores from references.json
         catch.append({"network": name, "score": float(s) if s else None, "catches": int(c), "misses": int(mi),
                       "balls_per_miss": round((int(c) + int(mi)) / int(mi)) if int(mi) else None})
 

@@ -60,14 +60,21 @@ https://huggingface.co/datasets/shawnghu/fable-weight-space-programming. Fable 5
 | Random play / empty network | 0.54 | `results/baselines/zero.json` |
 | p-values (Fisher exact, two-sided) | Fable 0→9 of 10: 0.0001; Opus 4→10: 0.011; Sonnet 6→10: 0.087 | computed 2026-11-23 |
 
-## Misses per ball (`results/catch_rate.txt`, 200 games per network, seeds 5000–5199)
-Being recomputed with the Amendment 4 networks; fill in from the new file.
-| Network | Score | Miss rate | "1 in" |
+## Misses per ball (`results/catch_rate.txt`, 200 games per network, seeds 5000–5199; recomputed 2026-11-23)
+"1 in" = (catches + misses) / misses, rounded.
+| Network | Score | Catches / misses | "1 in" |
 |---|---|---|---|
-| Opus best (opus/11) | 503 | 0.0005 | 2,000 |
-| Astra | 503 | 0.0011 | 900 |
-| Opus worst finished (opus/00) | 57 | 0.0105 | 95 |
-| Rule | 8 | 0.0961 | 10 |
+| Fable best (fable-high/03) | 503.5 | 117,195 / 55 | 2,132 → 2,100 |
+| Opus best (opus/03) | 510.4 | 113,941 / 64 | 1,781 → 1,800 |
+| Astra | 502.9 | 103,307 / 112 | 923 → 900 |
+| Opus worst finished (opus/00) | 57.2 | 18,773 / 200 | 95 |
+| Rule | 8.4 | 1,882 / 200 | 10 |
+
+Astra misses fewer balls per game partly because 517 of its 1,000 scoring games hit the 10,000-step cap.
+
+Identical play: fable-high/05 and opus/11, fable-high/04 and 07, and opus-high/06 and 08 have identical catch and miss counts
+although their weights differ (checked with np.array_equal). Their weights are large, so actions are near-deterministic, and
+the same choices on the same seeds give the same games.
 
 ## Not checkable by script (from reading the networks and Claude Code)
 - What units in opus-11's first layer do (2 direction units, 8 landing units): from the heatmap `results/figures/w1-opus-11.png`
@@ -85,5 +92,5 @@ Being recomputed with the Amendment 4 networks; fill in from the new file.
 ## Fixes from the fact-check (2026-11-23)
 Wording changed in the draft: "tenfold" → "ninefold" (57.2 vs 502.7/510.4); "Sonnet came close once" → "Sonnet's best was 351";
 "Haiku's are no better" → "similar; its best scored 20"; Fable high "best result" → "most reliable result" (Opus xhigh has the
-single highest score); Fable xhigh wording now says it hit the limit while thinking. Still open: the catch-rate table's
-"Opus, best" row is opus/11 (502.7), not the best Opus network (opus/03, 510.4); fix when the recount lands.
+single highest score); Fable xhigh wording now says it hit the limit while thinking. The catch-rate table now uses
+opus/03 (510.4) for "Opus, best" and adds Fable's best.
