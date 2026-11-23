@@ -167,21 +167,12 @@ def dots(out):
         ax.set_xticks([0, 32, 64, 96, 128], ["0", "32K", "64K", "96K", "128K"])
         ax.tick_params(labelbottom=True, labelleft=True)
     # axis names once for the figure, outside the cards, so all four cards hold the same things
-    fig.text(0.5, 0.118, "output tokens, almost all thinking", ha="center", color=MUTED)
     fig.text(0.012, 0.53, "score, mean of 1,000 games (log)", rotation=90, va="center", color=MUTED)
     for e, mk, f in EFFORTS:
         axs[0, 0].scatter([], [], marker=mk, edgecolors=INK, facecolors=INK if f else CARD, s=46, linewidths=1.4,
                           label=e)
     axs[0, 0].scatter([], [], marker=">", edgecolors=INK, facecolors=INK, s=34, label="cut off at the cap (no network)")
-    fig.legend(loc="upper center", bbox_to_anchor=(0.5, 0.995), ncol=4, frameon=False, fontsize=9.5)
-    # notes: their own band under a rule, apart from the plots
-    fig.add_artist(matplotlib.lines.Line2D([0.03, 0.97], [0.085, 0.085], color=GRID, lw=0.8))
-    fig.text(0.03, 0.068, "Notes", fontsize=8.5, fontweight="semibold", color=INK, va="top")
-    fig.text(0.03, 0.045, "Each mark is one run. A run cut off at the cap wrote no network and plays as the all-zero"
-             " network (random play, 0.54).\nDashed lines: random play, the follow-the-ball rule, PPO after 500M"
-             " steps, GPT-6 Astra. Claude via claude -p, one reply; MinAtar Breakout.", fontsize=8, color=MUTED,
-             va="top", linespacing=1.5)
-    fig.subplots_adjust(left=0.07, right=0.915, top=0.86, bottom=0.2)
+    fig.subplots_adjust(left=0.07, right=0.915, top=0.885, bottom=0.215)
     # cards: one rounded white box per panel, the same overhang on every panel (the largest one needed)
     fig.canvas.draw()
     inv, rend = fig.transFigure.inverted(), fig.canvas.get_renderer()
@@ -191,10 +182,23 @@ def dots(out):
     R = max(t.x1 - p.x1 for p, t in boxes) + padx
     B = max(p.y0 - t.y0 for p, t in boxes) + pady
     T = max(t.y1 - p.y1 for p, t in boxes) + pady
+    card = dict(transform=fig.transFigure, zorder=-1, boxstyle="round,pad=0,rounding_size=0.012", facecolor=CARD,
+                edgecolor=GRID, lw=1)
     for p, _ in boxes:
-        fig.patches.append(matplotlib.patches.FancyBboxPatch(
-            (p.x0 - L, p.y0 - B), p.width + L + R, p.height + B + T, transform=fig.transFigure, zorder=-1,
-            boxstyle="round,pad=0,rounding_size=0.012", facecolor=CARD, edgecolor=GRID, lw=1))
+        fig.patches.append(matplotlib.patches.FancyBboxPatch((p.x0 - L, p.y0 - B), p.width + L + R,
+                                                             p.height + B + T, **card))
+    x0, x1 = boxes[0][0].x0 - L, boxes[1][0].x1 + R
+    top, bottom = boxes[0][0].y1 + T, boxes[2][0].y0 - B
+    # legend just above the cards; axis name just below them; notes in a full-width card of their own
+    fig.legend(loc="lower center", bbox_to_anchor=(0.5, top + 0.008), ncol=4, frameon=False, fontsize=9.5)
+    fig.text(0.5, bottom - 0.022, "output tokens, almost all thinking", ha="center", va="top", color=MUTED)
+    ny0, ny1 = 0.022, bottom - 0.068
+    fig.patches.append(matplotlib.patches.FancyBboxPatch((x0, ny0), x1 - x0, ny1 - ny0, **card))
+    fig.text(x0 + padx, ny1 - 0.016, "Notes", fontsize=8.5, fontweight="semibold", color=INK, va="top")
+    fig.text(x0 + padx, ny1 - 0.040, "Each mark is one run. A run cut off at the cap wrote no network and plays as"
+             " the all-zero network (random play, 0.54).\nDashed lines: random play, the follow-the-ball rule, PPO"
+             " after 500M steps, GPT-6 Astra. Claude via claude -p, one reply; MinAtar Breakout.", fontsize=8,
+             color=MUTED, va="top", linespacing=1.5)
     fig.savefig(out, facecolor=BG)
 
 
