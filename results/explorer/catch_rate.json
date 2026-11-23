@@ -1,1 +1,142 @@
-[]
+[
+{
+"network": "rule",
+"score": null,
+"catches": 1882,
+"misses": 200,
+"balls_per_miss": 10
+},
+{
+"network": "astra",
+"score": null,
+"catches": 103307,
+"misses": 112,
+"balls_per_miss": 923
+},
+{
+"network": "fable-high/00",
+"score": 110.93,
+"catches": 23547,
+"misses": 200,
+"balls_per_miss": 119
+},
+{
+"network": "fable-high/01",
+"score": 329.86,
+"catches": 77750,
+"misses": 157,
+"balls_per_miss": 496
+},
+{
+"network": "fable-high/03",
+"score": 503.47,
+"catches": 117195,
+"misses": 55,
+"balls_per_miss": 2132
+},
+{
+"network": "fable-high/04",
+"score": 449.69,
+"catches": 87394,
+"misses": 150,
+"balls_per_miss": 584
+},
+{
+"network": "haiku-high/00",
+"score": 20.17,
+"catches": 49004,
+"misses": 135,
+"balls_per_miss": 364
+},
+{
+"network": "haiku-high/01",
+"score": 11.39,
+"catches": 2129,
+"misses": 200,
+"balls_per_miss": 12
+},
+{
+"network": "haiku-high/05",
+"score": 10.02,
+"catches": 1778,
+"misses": 200,
+"balls_per_miss": 10
+},
+{
+"network": "haiku-high/06",
+"score": 8.51,
+"catches": 1460,
+"misses": 200,
+"balls_per_miss": 8
+},
+{
+"network": "opus/00",
+"score": 57.22,
+"catches": 18773,
+"misses": 200,
+"balls_per_miss": 95
+},
+{
+"network": "opus/03",
+"score": 510.4,
+"catches": 113941,
+"misses": 64,
+"balls_per_miss": 1781
+},
+{
+"network": "opus/10",
+"score": 134.23,
+"catches": 31651,
+"misses": 196,
+"balls_per_miss": 162
+},
+{
+"network": "opus/11",
+"score": 502.7,
+"catches": 116801,
+"misses": 56,
+"balls_per_miss": 2087
+},
+{
+"network": "sonnet/00",
+"score": 26.74,
+"catches": 5970,
+"misses": 200,
+"balls_per_miss": 31
+},
+{
+"network": "sonnet/02",
+"score": 55.95,
+"catches": 13183,
+"misses": 200,
+"balls_per_miss": 67
+},
+{
+"network": "sonnet/03",
+"score": 59.19,
+"catches": 13695,
+"misses": 200,
+"balls_per_miss": 69
+},
+{
+"network": "sonnet/04",
+"score": 351.41,
+"catches": 102650,
+"misses": 77,
+"balls_per_miss": 1334
+},
+{
+"network": "sonnet/06",
+"score": 75.37,
+"catches": 18040,
+"misses": 200,
+"balls_per_miss": 91
+},
+{
+"network": "sonnet/07",
+"score": 31.34,
+"catches": 19877,
+"misses": 200,
+"balls_per_miss": 100
+}
+]
