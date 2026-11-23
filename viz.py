@@ -172,7 +172,7 @@ def dots(out):
         axs[0, 0].scatter([], [], marker=mk, edgecolors=INK, facecolors=INK if f else CARD, s=46, linewidths=1.4,
                           label=e)
     axs[0, 0].scatter([], [], marker=">", edgecolors=INK, facecolors=INK, s=34, label="cut off at the cap (no network)")
-    fig.subplots_adjust(left=0.07, right=0.915, top=0.885, bottom=0.228)
+    fig.subplots_adjust(left=0.07, right=0.915, top=0.885, bottom=0.246)
     # cards: one rounded white box per panel, the same overhang on every panel (the largest one needed)
     fig.canvas.draw()
     inv, rend = fig.transFigure.inverted(), fig.canvas.get_renderer()
@@ -194,15 +194,17 @@ def dots(out):
     fig.text(0.5, bottom - 0.022, "output tokens, almost all thinking", ha="center", va="top", color=MUTED)
     # notes: one heading + text per column of cards; the card is sized from the drawn text, equal padding all round
     import textwrap
-    notes = [("Marks", "Each mark is one run of Claude through claude -p: one reply, MinAtar Breakout. A run cut off"
-                       " at the cap wrote no network and plays at random (0.54)."),
+    notes = [("Marks", "Each mark is one run of Claude through claude -p: one reply, MinAtar Breakout. Arrows hit the"
+                       " cap, wrote no network and play at random (0.54); they are only stacked, so their height"
+                       " isn't a score. A mark on the bottom edge scored 0."),
              ("Dashed lines", "Random play (0.54), the follow-the-ball rule (8.4), PPO after 500M steps (25.3)"
-                              " and GPT-6\u00a0Astra's network under the same scorer (502.9).")]
+                              " and GPT-6\u00a0Astra's network under the same scorer (502.9). PPO is reinforcement"
+                              " learning on the same network shape, as reported in the original post.")]
     ny1, pad = bottom - 0.062, 0.018
     texts = []
     for cx, (head, body) in zip((x0, boxes[1][0].x0 - L), notes):
         fig.text(cx + padx, ny1 - pad, head, fontsize=8.5, fontweight="semibold", color=INK, va="top")
-        texts.append(fig.text(cx + padx, ny1 - pad - 0.024, textwrap.fill(body, 88, break_on_hyphens=False),
+        texts.append(fig.text(cx + padx, ny1 - pad - 0.024, textwrap.fill(body, 80, break_on_hyphens=False),
                               fontsize=8.5, color=MUTED, va="top", linespacing=1.5))
     fig.canvas.draw()
     ny0 = min(t.get_window_extent(rend).transformed(inv).y0 for t in texts) - pad + 0.006  # text box includes descent
