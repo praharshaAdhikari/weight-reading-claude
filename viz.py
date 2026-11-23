@@ -90,14 +90,25 @@ REFS = [(0.54, "random", "center"), (8.37, "ball-follow rule ", "right"), (25.3,
 
 
 def counted_runs(label, game="breakout"):
-    """(score, wrote a network) for each counted run of one arm."""
+    """One dict per counted run of an arm: score, output tokens, and how it ended."""
     out = []
     for d in sorted((Path(__file__).parent / "runs" / game / label).glob("[0-9][0-9]")):
-        if not (d / "score.json").exists() or json.loads((d / "run.json").read_text())["outcome"] == "infra":
+        if not (d / "score.json").exists():
             continue
-        sc = json.loads((d / "score.json").read_text())
-        out.append((sc["mean"], sc["reading"]["applied"] > 0 and sc["reading"]["nonzero"]["W3"] > 0))
+        run, sc = json.loads((d / "run.json").read_text()), json.loads((d / "score.json").read_text())
+        if run["outcome"] == "infra":
+            continue
+        tokens = ((run.get("result") or {}).get("usage") or {}).get("output_tokens") or 128_000  # cut off = cap
+        kind = ("wrote" if sc["reading"]["nonzero"]["W3"] else "writing" if sc["reading"]["block"] else "thinking")
+        out.append({"score": sc["mean"], "tokens": tokens, "kind": kind, "run": d.name})
     return out
+
+
+STYLE = {"wrote": dict(facecolors=PADDLE, edgecolors=PADDLE),
+         "writing": dict(facecolors=SURFACE, edgecolors=PADDLE),
+         "thinking": dict(facecolors=SURFACE, edgecolors=MUTED)}
+LEGEND = {"wrote": "finished a network", "writing": "cut off while writing the network",
+          "thinking": "cut off while still thinking"}
 
 
 def dots(out):
@@ -106,45 +117,80 @@ def dots(out):
     import matplotlib.pyplot as plt
     from matplotlib import font_manager
     font_manager.fontManager.addfont("/usr/share/fonts/google-noto-vf/NotoSans[wght].ttf")
-    plt.rcParams.update({"font.family": "Noto Sans", "font.size": 11, "axes.edgecolor": GRID,
+    plt.rcParams.update({"font.family": "Noto Sans", "font.size": 10.5, "axes.edgecolor": GRID,
                          "xtick.color": MUTED, "ytick.color": INK, "axes.labelcolor": MUTED})
-    arms = [(k, name, counted_runs(k)) for k, name in ARMS]
-    arms = [a for a in arms if a[2]]
-    fig, ax = plt.subplots(figsize=(9, 0.62 * len(arms) + 1.6), dpi=200, facecolor=SURFACE)
-    ax.set_facecolor(SURFACE)
+    arms = [(name, runs) for k, name in ARMS if (runs := counted_runs(k))][::-1]  # first arm at the top
+    n = len(arms)
+    fig, (ax, at, ax3) = plt.subplots(1, 3, figsize=(13, 0.7 * n + 1.5), dpi=200, facecolor=SURFACE, sharey=True,
+                                      gridspec_kw={"width_ratios": [5.2, 2.6, 2.2], "wspace": 0.06})
+    for a_ in (ax, at, ax3):
+        a_.set_facecolor(SURFACE)
+        a_.tick_params(length=0, which="both")
+        for side in ("top", "right", "left"):
+            a_.spines[side].set_visible(False)
+        for row in range(n):
+            a_.axhline(row, color=GRID, lw=0.6, zorder=0)
+    m = dict(s=44, zorder=3, linewidths=1.4)
+
+    # 1. score, log scale
     for x, name, ha in REFS:
-        ax.axvline(x, ymax=(len(arms) + 0.08) / (len(arms) + 0.4), color=TRAIL, lw=1, zorder=1)
-        ax.text(x, len(arms) - 0.45, name, ha=ha, va="bottom", fontsize=9, color=MUTED)
-    for row, (_, name, runs) in enumerate(reversed(arms)):
-        blank = [r for r in runs if not r[1]]  # every blank run scores the same 0.54: one marker and a count
-        if blank:
-            ax.scatter(0.54, row, s=46, zorder=3, linewidths=1.4, edgecolors=MUTED, facecolors=SURFACE)
-            ax.text(0.62, row, f"×{len(blank)}", va="center", fontsize=9.5, color=MUTED)
-        placed = []  # stack runs that would overlap, beeswarm style
-        for score, wrote in sorted(r for r in runs if r[1]):
-            lx = np.log10(score)
-            k = 0
+        ax.axvline(x, ymax=(n + 0.02) / (n + 0.5), color=TRAIL, lw=1, zorder=1)
+        ax.text(x, n - 0.45, name, ha=ha, va="bottom", fontsize=8.5, color=MUTED)
+    for row, (_, runs) in enumerate(arms):
+        blank = [r for r in runs if r["kind"] != "wrote"]
+        for kind in ("thinking", "writing"):  # blank networks all score 0.54: one marker per kind, with a count
+            k = sum(r["kind"] == kind for r in blank)
+            if k:
+                y = row + (0.17 if kind == "writing" and len({r["kind"] for r in blank}) > 1 else 0)
+                ax.scatter(0.54, y, **m, **STYLE[kind])
+                ax.text(0.63, y, f"×{k}", va="center", fontsize=9, color=MUTED)
+        placed = []
+        for r in sorted((r for r in runs if r["kind"] == "wrote"), key=lambda r: r["score"]):
+            lx, k = np.log10(r["score"]), 0
             while any(abs(lx - px) < 0.045 and pk == k for px, pk in placed):
                 k += 1
             placed.append((lx, k))
-            y = row + (0.14 * ((k + 1) // 2) * (1 if k % 2 else -1))
-            ax.scatter(score, y, s=46, zorder=3, linewidths=1.4, edgecolors=PADDLE if wrote else MUTED,
-                       facecolors=PADDLE if wrote else SURFACE)
+            ax.scatter(r["score"], row + 0.15 * ((k + 1) // 2) * (1 if k % 2 else -1), **m, **STYLE["wrote"])
+            if r["score"] >= 300:
+                ax.text(r["score"] * 1.18, row + 0.15 * ((k + 1) // 2) * (1 if k % 2 else -1), f"{r['score']:.0f}",
+                        va="center", fontsize=8.5, color=INK)
     ax.set_xscale("log")
-    ax.set_xlim(0.35, 900)
-    ax.set_ylim(-0.6, len(arms) - 0.2)
-    ax.set_yticks(range(len(arms)), [a[1] for a in reversed(arms)])
+    ax.set_xlim(0.35, 1000)
+    ax.set_ylim(-0.6, n - 0.05)
+    ax.set_yticks(range(n), [a[0] for a in arms])
     ax.set_xticks([1, 10, 100, 500], ["1", "10", "100", "500"])
-    ax.tick_params(length=0, which="both")
     ax.xaxis.set_minor_formatter(matplotlib.ticker.NullFormatter())
-    for side in ("top", "right", "left"):
-        ax.spines[side].set_visible(False)
     ax.set_xlabel("Breakout score, mean of 1,000 games (log scale)")
-    ax.scatter([], [], s=46, color=PADDLE, label="wrote a network")
-    ax.scatter([], [], s=46, facecolors=SURFACE, edgecolors=MUTED, linewidths=1.4,
-               label="ran out of room first (scores as random play)")
-    ax.legend(loc="lower center", bbox_to_anchor=(0.5, 1.0 + 0.5 / len(arms)), ncol=2, frameon=False, fontsize=9.5)
-    fig.tight_layout()
+
+    # 2. output tokens: the 128K cap is why most runs wrote nothing
+    at.axvline(128, ymax=(n + 0.02) / (n + 0.5), color=TRAIL, lw=1, zorder=1)
+    at.text(128, n - 0.45, "output cap", ha="right", va="bottom", fontsize=8.5, color=MUTED)
+    rng = np.random.default_rng(0)
+    for row, (_, runs) in enumerate(arms):
+        for r in runs:
+            at.scatter(r["tokens"] / 1000, row + rng.uniform(-0.2, 0.2), **m, **STYLE[r["kind"]])
+    at.set_xlim(0, 140)
+    at.set_xticks([0, 32, 64, 96, 128], ["0", "32K", "64K", "96K", "128K"])
+    at.set_xlabel("output tokens, almost all thinking")
+
+    # 3. summary per arm
+    ax3.set_xlim(0, 1)
+    ax3.set_xticks([])
+    ax3.spines["bottom"].set_visible(False)
+    for x, head in ((0.02, "finished"), (0.38, "median"), (0.70, "best")):
+        ax3.text(x, n - 0.45, head, va="bottom", fontsize=8.5, color=MUTED)
+    for row, (_, runs) in enumerate(arms):
+        sc = [r["score"] for r in runs]
+        wrote = sum(r["kind"] == "wrote" for r in runs)
+        for x, txt in ((0.02, f"{wrote} of {len(runs)}"), (0.38, f"{np.median(sc):.3g}"), (0.70, f"{max(sc):.3g}")):
+            ax3.text(x, row, txt, va="center", fontsize=10, color=INK)
+
+    for kind, label in LEGEND.items():
+        ax.scatter([], [], **dict(m, zorder=0), **STYLE[kind], label=label)
+    fig.legend(loc="upper center", bbox_to_anchor=(0.5, 1.0), ncol=3, frameon=False, fontsize=9.5)
+    fig.text(0.01, 0.005, "Each dot is one run. Runs that finish no network play as the all-zero network (random play,"
+             " 0.54). Claude via claude -p, one reply, 128K output cap; MinAtar Breakout.", fontsize=8, color=MUTED)
+    fig.tight_layout(rect=(0, 0.035, 1, 0.95))
     fig.savefig(out, facecolor=SURFACE)
 
 
