@@ -36,7 +36,7 @@ https://huggingface.co/datasets/shawnghu/fable-weight-space-programming. Fable 5
 ## Our runs (all from runs.json unless noted)
 | Claim | Value | Detail |
 |---|---|---|
-| Total runs | 85 | 40 at xhigh, 40 at high, 5 at max |
+| Total runs | 90 | 40 at xhigh, 40 at high, 10 at max (Opus 5, Sonnet 5) |
 | Haiku xhigh | 0 of 10, median 0.54, best 0.54 | |
 | Sonnet xhigh | 6 of 10, median 29 (29.04), best 351 (351.4, sonnet-xhigh/04) | |
 | Opus xhigh | 4 of 10, median 0.54, best 510 (510.4, opus-xhigh/03) | finished: 57.2 (00), 134.2 (10), 502.7 (11), 510.4 (03) |
@@ -53,6 +53,7 @@ https://huggingface.co/datasets/shawnghu/fable-weight-space-programming. Fable 5
 | Sonnet high | 10 of 10, median 7.6, best 16 (15.79); median 1.0 min, 7,384 tokens | |
 | Opus high | 10 of 10, median 56 (55.6), best 352 (352.3) | |
 | Opus max | 0 of 5 | |
+| Sonnet max | 0 of 5 | Amendment 5, 2026-11-24 |
 | Fable high | 9 of 10, median 450 (449.77), best 503 (503.47) | |
 | Fable high, three networks level with Astra | 503.5 (03), 502.2 (05), 500.6 (08) | all within 2 SE of 502.9 |
 | Five Claude networks above 500 | opus-xhigh/03 510.4, fable-high/03 503.5, opus-xhigh/11 502.7, fable-high/05 502.2, fable-high/08 500.6 | |
@@ -82,7 +83,7 @@ the same choices on the same seeds give the same games.
 - Claude Code's continuation behavior, checked in the installed 2.1.330 build (`~/.local/share/claude/versions/2.1.330`):
   - the retry limit is a constant `bs=3`, next to the cut-reply code (`maxOutputTokensRecoveryCount+1; return g<=bs`): "up to three more times";
   - the message "Output token limit hit while you were still reasoning … reason much more briefly …" is in the same build.
-  - Our runs received only the "Output token limit hit. Resume directly …" version (37 times in `runs/breakout/*/*/run.json`), and `run.py`
+  - Our runs received only the "Output token limit hit. Resume directly …" version (42 times in `runs/breakout/*/*/run.json`), and `run.py`
     stops at the first one.
 - "Hit the 128K limit": cut-off runs have no usage record. The evidence is Claude Code's output-limit message in each
   run.json plus a final block that is thinking (28 runs) or text (sonnet-xhigh/01, sonnet-xhigh/08). Checked by the fact-check agent, 2026-11-23.
@@ -110,3 +111,13 @@ opus-xhigh/03 (510.4) for "Opus, best" and adds Fable's best.
 | opus-xhigh run numbers go to 11 | slots 05 and 09 were `infra` and rerun | `runs/breakout/opus-xhigh/*/run.json` |
 | Replication links | 55 MaceTenth, 57 Sir-Olexander, 307 nihilistau, 484 MatinKhajavi, 504 EphraiemSarabamoun | GitHub repos (research) |
 | MinAtar | Young & Tian 2019, arXiv:1903.03176 | |
+
+## Added with Amendment 5 (2026-11-24)
+| Claim | Value | Source |
+|---|---|---|
+| Sonnet max | 0 of 5 finished; all cut off at the cap, each 0.54; 18.8 to 19.1 min each | `runs/breakout/sonnet-max/*/run.json`, score.json |
+| … still thinking when cut off | 5 of 5 (last block thinking) | events.jsonl |
+| Max across both models tried | 0 of 10 (Opus 0 of 5, Sonnet 0 of 5) | runs.json |
+| Total runs | 90; runs cut off at the cap 42 (30 xhigh, 10 max, 1 Haiku high, 1 Fable high) | runs.json |
+| Weekly usage for the 5 runs | 13% → 16% | `logs/runs.log` |
+| One `api_retry` per run, about 5K thinking tokens in | did not change the outcome (thinking estimate ended 73.5K to 75.6K vs 72.4K for Opus max) | events.jsonl; PROTOCOL.md Amendment 5 |

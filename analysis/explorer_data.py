@@ -7,7 +7,7 @@ OUT = R / "results" / "explorer"
 ARMS = {"haiku-xhigh": ("Haiku 5.5", "xhigh"), "sonnet-xhigh": ("Sonnet 5.5", "xhigh"), "opus-xhigh": ("Opus 5.5", "xhigh"),
         "fable-xhigh": ("Fable 5.2", "xhigh"), "haiku-high": ("Haiku 5.5", "high"), "sonnet-high": ("Sonnet 5.5", "high"),
         "opus-high": ("Opus 5.5", "high"), "fable-high": ("Fable 5.2", "high"),
-        "opus-max": ("Opus 5.5", "max")}
+        "opus-max": ("Opus 5.5", "max"), "sonnet-max": ("Sonnet 5.5", "max")}
 
 
 def excerpt(text, n, tail=False):

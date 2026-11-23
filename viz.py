@@ -84,7 +84,7 @@ def make_gif(source, out, label, seed=0, steps=400):
 
 ARMS = [("haiku-high", "Haiku 5.5 · high"), ("haiku-xhigh", "Haiku 5.5 · xhigh"), ("sonnet-high", "Sonnet 5.5 · high"),
         ("sonnet-xhigh", "Sonnet 5.5 · xhigh"), ("opus-high", "Opus 5.5 · high"), ("opus-xhigh", "Opus 5.5 · xhigh"),
-        ("opus-max", "Opus 5.5 · max"), ("fable-high", "Fable 5.2 · high"), ("fable-xhigh", "Fable 5.2 · xhigh")]
+        ("opus-max", "Opus 5.5 · max"), ("sonnet-max", "Sonnet 5.5 · max"), ("fable-high", "Fable 5.2 · high"), ("fable-xhigh", "Fable 5.2 · xhigh")]
 MODELS = [("haiku", "Haiku 5.5", "#2a78d6"), ("sonnet", "Sonnet 5.5", "#eb6834"), ("opus", "Opus 5.5", "#1baf7a"),
           ("fable", "Fable 5.2", "#eda100")]  # categorical slots 1-4, in order (dataviz palette, validated)
 EFFORTS = [("high", "^", True), ("xhigh", "o", False), ("max", "D", False)]  # marker, filled

@@ -91,6 +91,7 @@
         <option value="sonnet-high">Sonnet 5.5 · high</option>
         <option value="opus-high">Opus 5.5 · high</option>
         <option value="fable-high">Fable 5.2 · high</option>
+        <option value="sonnet-max">Sonnet 5.5 · max</option>
         <option value="opus-max">Opus 5.5 · max</option>
       </select></label>
     </div>
@@ -136,7 +137,7 @@
 </div>
 
 <script>
-const ARM_ORDER = ['haiku-high', 'haiku-xhigh', 'sonnet-high', 'sonnet-xhigh', 'opus-high', 'opus-xhigh', 'opus-max', 'fable-high', 'fable-xhigh'];
+const ARM_ORDER = ['haiku-high', 'haiku-xhigh', 'sonnet-high', 'sonnet-xhigh', 'sonnet-max', 'opus-high', 'opus-xhigh', 'opus-max', 'fable-high', 'fable-xhigh'];
 dash.calc('arms', {
   inputs: ['runs'],
   title: 'Per model and setting',
