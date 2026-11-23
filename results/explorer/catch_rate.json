@@ -175,28 +175,28 @@
 "balls_per_miss": 107
 },
 {
-"network": "opus/00",
+"network": "opus-xhigh/00",
 "score": 57.22,
 "catches": 18773,
 "misses": 200,
 "balls_per_miss": 95
 },
 {
-"network": "opus/03",
+"network": "opus-xhigh/03",
 "score": 510.4,
 "catches": 113941,
 "misses": 64,
 "balls_per_miss": 1781
 },
 {
-"network": "opus/10",
+"network": "opus-xhigh/10",
 "score": 134.23,
 "catches": 31651,
 "misses": 196,
 "balls_per_miss": 162
 },
 {
-"network": "opus/11",
+"network": "opus-xhigh/11",
 "score": 502.7,
 "catches": 116801,
 "misses": 56,
@@ -238,42 +238,42 @@
 "balls_per_miss": 19
 },
 {
-"network": "sonnet/00",
+"network": "sonnet-xhigh/00",
 "score": 26.74,
 "catches": 5970,
 "misses": 200,
 "balls_per_miss": 31
 },
 {
-"network": "sonnet/02",
+"network": "sonnet-xhigh/02",
 "score": 55.95,
 "catches": 13183,
 "misses": 200,
 "balls_per_miss": 67
 },
 {
-"network": "sonnet/03",
+"network": "sonnet-xhigh/03",
 "score": 59.19,
 "catches": 13695,
 "misses": 200,
 "balls_per_miss": 69
 },
 {
-"network": "sonnet/04",
+"network": "sonnet-xhigh/04",
 "score": 351.41,
 "catches": 102650,
 "misses": 77,
 "balls_per_miss": 1334
 },
 {
-"network": "sonnet/06",
+"network": "sonnet-xhigh/06",
 "score": 75.37,
 "catches": 18040,
 "misses": 200,
 "balls_per_miss": 91
 },
 {
-"network": "sonnet/07",
+"network": "sonnet-xhigh/07",
 "score": 31.34,
 "catches": 19877,
 "misses": 200,

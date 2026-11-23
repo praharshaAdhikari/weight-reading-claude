@@ -1,7 +1,7 @@
 [
 {
-"id": "haiku/00",
-"arm": "haiku",
+"id": "haiku-xhigh/00",
+"arm": "haiku-xhigh",
 "model": "Haiku 5.5",
 "effort": "xhigh",
 "run": 0,
@@ -27,8 +27,8 @@
 "last_thought": "\u2026 the ball's column, and when bricks are gone the ball may bounce lower or higher instead. I'm weighing whether the brick-path prediction holds up for ascending balls, since by the time a game is well along, the columns the ball would travel through may already be cleared, so the ball could bounce off a different row or reach the top without hitting anything."
 },
 {
-"id": "haiku/01",
-"arm": "haiku",
+"id": "haiku-xhigh/01",
+"arm": "haiku-xhigh",
 "model": "Haiku 5.5",
 "effort": "xhigh",
 "run": 1,
@@ -54,8 +54,8 @@
 "last_thought": "\u2026he layer-2 gain \u03b1 for the R unit. With \u03b1 = 0.5 the margin is only 1 and tanh(1) is too weak, so I'm trying \u03b1 = 1 next, which gives tanh(2) \u2248 0.96, and then \u03b1 = 2 for near-full saturation at tanh(4) \u2248 0.9993. Now I'm scaling the R-unit pre-activation by a gain of 2, which turns the expression into a constant of 2 plus weighted terms on the threshold features."
 },
 {
-"id": "haiku/02",
-"arm": "haiku",
+"id": "haiku-xhigh/02",
+"arm": "haiku-xhigh",
 "model": "Haiku 5.5",
 "effort": "xhigh",
 "run": 2,
@@ -81,8 +81,8 @@
 "last_thought": "\u2026hen gate on the direction and fold case, and the output logits come out as 5f and -5f with noop at -20. I'm checking the write-up's target formulas for the diagonal cases: for the down-right direction, the catch column is bx \u2212 by + 8.5 normally, and 11.5 \u2212 bx + by when the fold applies. For down-left with the ball near the left wall, the target is simply bx."
 },
 {
-"id": "haiku/03",
-"arm": "haiku",
+"id": "haiku-xhigh/03",
+"arm": "haiku-xhigh",
 "model": "Haiku 5.5",
 "effort": "xhigh",
 "run": 3,
@@ -108,8 +108,8 @@
 "last_thought": "\u20262 biases, and I'm checking each unit's input count against its bias value. Still writing the weight tables, and now I'm checking the output layer: the L and R units get their +8 and +40 values on the right rows. Still checking the weight tables, and I'm confirming that the rest of the layer-2 columns stay at zero so the unused outputs don't shift the logits."
 },
 {
-"id": "haiku/04",
-"arm": "haiku",
+"id": "haiku-xhigh/04",
+"arm": "haiku-xhigh",
 "model": "Haiku 5.5",
 "effort": "xhigh",
 "run": 4,
@@ -135,8 +135,8 @@
 "last_thought": "\u2026-cycle miss chance comes to roughly 9%, which means around eleven cycles before a miss is expected. I'm estimating the score for the lagging policy at roughly 10 on average, since about one brick falls per cycle and a miss is expected after around eleven cycles. Next I'm turning to the lead variant with the bounce rule and checking how the gap behaves there."
 },
 {
-"id": "haiku/05",
-"arm": "haiku",
+"id": "haiku-xhigh/05",
+"arm": "haiku-xhigh",
 "model": "Haiku 5.5",
 "effort": "xhigh",
 "run": 5,
@@ -162,8 +162,8 @@
 "last_thought": "\u2026 in the hundreds, so tanh saturates cleanly and there's no overflow concern. I'm also confirming that the approximation error in u is about 0.01 cells, well inside the 0.5 margin each threshold needs. I'm checking the layer-2 scaling again: the 4(1-r) weights times the \u00b11 gate outputs, multiplied by the gain of 8, should add up to the correction term I need."
 },
 {
-"id": "haiku/07",
-"arm": "haiku",
+"id": "haiku-xhigh/07",
+"arm": "haiku-xhigh",
 "model": "Haiku 5.5",
 "effort": "xhigh",
 "run": 7,
@@ -189,8 +189,8 @@
 "last_thought": "\u2026 single unit that outputs a monotonic tanh of X, so the values for X = -1, 0, and 1 come out distinct. The second layer can then set thresholds between those levels to recover both the X \u2265 0 and X \u2265 1 conditions. Still working out the single-unit idea: a monotone tanh of X could give distinct values for each X, so one hidden unit might serve both thresholds."
 },
 {
-"id": "haiku/08",
-"arm": "haiku",
+"id": "haiku-xhigh/08",
+"arm": "haiku-xhigh",
 "model": "Haiku 5.5",
 "effort": "xhigh",
 "run": 8,
@@ -216,8 +216,8 @@
 "last_thought": "\u2026he moment of landing, so that idea doesn't work. Slack has to come from somewhere other than being ahead. I'm concluding that slack can only come from earlier in the approach, since at the landing moment the paddle has to sit inside the two-cell window and any lead would overshoot it. Prediction-based parking would buy that margin before the ball gets close."
 },
 {
-"id": "haiku/10",
-"arm": "haiku",
+"id": "haiku-xhigh/10",
+"arm": "haiku-xhigh",
 "model": "Haiku 5.5",
 "effort": "xhigh",
 "run": 10,
@@ -243,8 +243,8 @@
 "last_thought": "\u2026hat works for both DR and UR. Their unit-value expressions differ by a term in by, so the naive shared threshold doesn't work. I'm checking whether a dy-dependent offset can make one form cover both. I'm testing whether a single linear form with a dy-dependent offset can cover both the DR and UR cases, and I'm trying out 3.5 + dy\u00b7(5.5 \u2212 by) as the candidate."
 },
 {
-"id": "haiku/11",
-"arm": "haiku",
+"id": "haiku-xhigh/11",
+"arm": "haiku-xhigh",
 "model": "Haiku 5.5",
 "effort": "xhigh",
 "run": 11,
@@ -270,8 +270,8 @@
 "last_thought": "\u2026 cancel. Still checking the sign-and-gate arithmetic: with the gate near zero the pre-activations for the inactive case stay strongly negative, so those units remain off. Checking the gate terms for the other groups: the down-left, up-right, and up-left units all come out with zero or negative gates here, so they stay off while the down-right case is active."
 },
 {
-"id": "sonnet/00",
-"arm": "sonnet",
+"id": "sonnet-xhigh/00",
+"arm": "sonnet-xhigh",
 "model": "Sonnet 5.5",
 "effort": "xhigh",
 "run": 0,
@@ -297,8 +297,8 @@
 "last_thought": ""
 },
 {
-"id": "sonnet/01",
-"arm": "sonnet",
+"id": "sonnet-xhigh/01",
+"arm": "sonnet-xhigh",
 "model": "Sonnet 5.5",
 "effort": "xhigh",
 "run": 1,
@@ -324,8 +324,8 @@
 "last_thought": "\u2026th the first unit tracking ball horizontal direction from the trail and the next ones handling vertical direction and landing-window comparisons. Writing the first-layer weight assignments for the ball's horizontal position... Writing the first-layer weights for the ball's horizontal position and trail... Writing the weight tables for the remaining layers..."
 },
 {
-"id": "sonnet/02",
-"arm": "sonnet",
+"id": "sonnet-xhigh/02",
+"arm": "sonnet-xhigh",
 "model": "Sonnet 5.5",
 "effort": "xhigh",
 "run": 2,
@@ -351,8 +351,8 @@
 "last_thought": ""
 },
 {
-"id": "sonnet/03",
-"arm": "sonnet",
+"id": "sonnet-xhigh/03",
+"arm": "sonnet-xhigh",
 "model": "Sonnet 5.5",
 "effort": "xhigh",
 "run": 3,
@@ -378,8 +378,8 @@
 "last_thought": ""
 },
 {
-"id": "sonnet/04",
-"arm": "sonnet",
+"id": "sonnet-xhigh/04",
+"arm": "sonnet-xhigh",
 "model": "Sonnet 5.5",
 "effort": "xhigh",
 "run": 4,
@@ -405,8 +405,8 @@
 "last_thought": ""
 },
 {
-"id": "sonnet/06",
-"arm": "sonnet",
+"id": "sonnet-xhigh/06",
+"arm": "sonnet-xhigh",
 "model": "Sonnet 5.5",
 "effort": "xhigh",
 "run": 6,
@@ -432,8 +432,8 @@
 "last_thought": ""
 },
 {
-"id": "sonnet/07",
-"arm": "sonnet",
+"id": "sonnet-xhigh/07",
+"arm": "sonnet-xhigh",
 "model": "Sonnet 5.5",
 "effort": "xhigh",
 "run": 7,
@@ -459,8 +459,8 @@
 "last_thought": ""
 },
 {
-"id": "sonnet/08",
-"arm": "sonnet",
+"id": "sonnet-xhigh/08",
+"arm": "sonnet-xhigh",
 "model": "Sonnet 5.5",
 "effort": "xhigh",
 "run": 8,
@@ -486,8 +486,8 @@
 "last_thought": "\u2026ft-down trail, and the diagonal cells line up with the on-state check I already did. I'm checking that the ball's observation row never reaches row 9, since the episode ends before the policy needs that final frame. I'm also confirming the paddle weight column has the ten entries it should, and then I'll think about whether to add a brief note on the design."
 },
 {
-"id": "sonnet/11",
-"arm": "sonnet",
+"id": "sonnet-xhigh/11",
+"arm": "sonnet-xhigh",
 "model": "Sonnet 5.5",
 "effort": "xhigh",
 "run": 11,
@@ -513,8 +513,8 @@
 "last_thought": "\u2026n ends up a couple of cells beyond where I'd expect. That gap is still within the remaining steps, so the paddle should have enough slack to reach it. I'm checking how far the paddle has to travel when the guessed region gets pushed out by the fold, so it lands a couple of cells past where I'd expect, and whether it still reaches that spot in the steps left."
 },
 {
-"id": "sonnet/12",
-"arm": "sonnet",
+"id": "sonnet-xhigh/12",
+"arm": "sonnet-xhigh",
 "model": "Sonnet 5.5",
 "effort": "xhigh",
 "run": 12,
@@ -540,8 +540,8 @@
 "last_thought": "\u2026observation: if the previous action was a move, the repeat could add an unwanted step, but a later correction can absorb it. I'm also confirming the weight-matrix indexing, where each row of W2 is an input unit and each column is a unit in the next layer. I'm now checking the L2 threshold biases, where the gating and tanh behave differently in the on-states."
 },
 {
-"id": "opus/00",
-"arm": "opus",
+"id": "opus-xhigh/00",
+"arm": "opus-xhigh",
 "model": "Opus 5.5",
 "effort": "xhigh",
 "run": 0,
@@ -567,8 +567,8 @@
 "last_thought": ""
 },
 {
-"id": "opus/01",
-"arm": "opus",
+"id": "opus-xhigh/01",
+"arm": "opus-xhigh",
 "model": "Opus 5.5",
 "effort": "xhigh",
 "run": 1,
@@ -594,8 +594,8 @@
 "last_thought": "\u2026t to trace the downward frames to confirm the region. I'm checking the wall-side H formula against the start-of-game cases: with the ball at column 0 the target comes out to 5, and at column 9 it comes out to 4, so the paddle at 4 already lines up when the ball starts at column 9. Still checking the ball's paddle-bounce cases and the wall-edge column ranges."
 },
 {
-"id": "opus/02",
-"arm": "opus",
+"id": "opus-xhigh/02",
+"arm": "opus-xhigh",
 "model": "Opus 5.5",
 "effort": "xhigh",
 "run": 2,
@@ -621,8 +621,8 @@
 "last_thought": "\u2026then applying the scale. Scaling the weight columns by 8 is the next step, and the bias terms for the comparator and indicator units are being set from that scale. I'm also working out the indicator units' weights: each one is the raw ball-row value times 8, offset by a bias of -4. Still writing the layer-two weights... Still writing the layer-two weights..."
 },
 {
-"id": "opus/03",
-"arm": "opus",
+"id": "opus-xhigh/03",
+"arm": "opus-xhigh",
 "model": "Opus 5.5",
 "effort": "xhigh",
 "run": 3,
@@ -648,8 +648,8 @@
 "last_thought": ""
 },
 {
-"id": "opus/04",
-"arm": "opus",
+"id": "opus-xhigh/04",
+"arm": "opus-xhigh",
 "model": "Opus 5.5",
 "effort": "xhigh",
 "run": 4,
@@ -675,8 +675,8 @@
 "last_thought": "\u2026 gate, and next I'll check its activation with a sample position. Still writing the weight values, now setting the bounce units' ball and trail entries in terms of the column position, with a scaled bias and the gating constants. Still checking the bounce-unit weights against a sample position, confirming the left-bounce case gives a positive pre-activation."
 },
 {
-"id": "opus/06",
-"arm": "opus",
+"id": "opus-xhigh/06",
+"arm": "opus-xhigh",
 "model": "Opus 5.5",
 "effort": "xhigh",
 "run": 6,
@@ -702,8 +702,8 @@
 "last_thought": "\u2026ate targets can be represented exactly. I still need to confirm the sign convention for the alternating sum before I trust that result. I'm deriving the alternating-sum condition by assigning a value to T0 and solving each successive cell: B1 is the first edge minus that value, and T2 is the second edge minus B1, so the signs keep alternating as I go around."
 },
 {
-"id": "opus/07",
-"arm": "opus",
+"id": "opus-xhigh/07",
+"arm": "opus-xhigh",
 "model": "Opus 5.5",
 "effort": "xhigh",
 "run": 7,
@@ -729,8 +729,8 @@
 "last_thought": "\u2026l-channel weight tables... Still writing the ball-channel weight tables... Still writing the ball-channel weight tables... Still writing the weight tables for the remaining units... Still writing the descending-mode ball-channel tables... Still writing the weight tables for the mode A units... Still writing the ball-channel weight indices for the M_D unit..."
 },
 {
-"id": "opus/08",
-"arm": "opus",
+"id": "opus-xhigh/08",
+"arm": "opus-xhigh",
 "model": "Opus 5.5",
 "effort": "xhigh",
 "run": 8,
@@ -756,8 +756,8 @@
 "last_thought": "\u2026es, a rightward approach and a leftward one, and confirming the window midpoint lands where the formula predicts. I'm checking the window midpoint for the left-edge case: with the ball ending at column 0, the window comes out to \u22120.5, so a paddle at column 0 is right on it and should stay put, while one at column 1 sits a full step past and has to move left."
 },
 {
-"id": "opus/10",
-"arm": "opus",
+"id": "opus-xhigh/10",
+"arm": "opus-xhigh",
 "model": "Opus 5.5",
 "effort": "xhigh",
 "run": 10,
@@ -783,8 +783,8 @@
 "last_thought": ""
 },
 {
-"id": "opus/11",
-"arm": "opus",
+"id": "opus-xhigh/11",
+"arm": "opus-xhigh",
 "model": "Opus 5.5",
 "effort": "xhigh",
 "run": 11,
@@ -810,8 +810,8 @@
 "last_thought": ""
 },
 {
-"id": "fable/00",
-"arm": "fable",
+"id": "fable-xhigh/00",
+"arm": "fable-xhigh",
 "model": "Fable 5.2",
 "effort": "xhigh",
 "run": 0,
@@ -837,8 +837,8 @@
 "last_thought": "\u20267e-4, and the one from x0=3 is only around 3e-6. The flight from x0=8 into zone (1,2) is the next one to estimate, where the overshoot risk looks small but still needs a number. I'm now checking the remaining flights, where the wall-protected zones bring the failure risk down to about 1e-4 for the x0=9 case, with the mirror-image flights handled by symmetry."
 },
 {
-"id": "fable/01",
-"arm": "fable",
+"id": "fable-xhigh/01",
+"arm": "fable-xhigh",
 "model": "Fable 5.2",
 "effort": "xhigh",
 "run": 1,
@@ -864,8 +864,8 @@
 "last_thought": "\u2026 the wall at 9 clamps the overshoot, so the miss chance is about 1e-4, while x0=1 and x0=2 stay near 1e-3 because of the start-loss cases. I'm checking the cases where the paddle starts close to the far-side preferred cell, and for x0 of 5 or more it arrives at the preferred cell directly from the near side, so a single slip only moves it back into the zone."
 },
 {
-"id": "fable/02",
-"arm": "fable",
+"id": "fable-xhigh/02",
+"arm": "fable-xhigh",
 "model": "Fable 5.2",
 "effort": "xhigh",
 "run": 2,
@@ -891,8 +891,8 @@
 "last_thought": "\u2026y under pure A, and whether even parity is actually better for clearing bricks than odd. It looks symmetric, so I'll keep going. I'm checking the even-parity start at paddle column 0, where the ball heads right-up from column 1. For the next zone the target T comes out to 9 and the alternative T' to 8, so the nearer one is T' and the fallback is still valid."
 },
 {
-"id": "fable/03",
-"arm": "fable",
+"id": "fable-xhigh/03",
+"arm": "fable-xhigh",
 "model": "Fable 5.2",
 "effort": "xhigh",
 "run": 3,
@@ -918,8 +918,8 @@
 "last_thought": "\u2026. I'm tracing the visit order for the right-start case, starting with the brick at row 3 and moving through the ones that follow. I'm tracing the visit order through the remaining bricks: after the row-1 hit at column 1 the path adds fourteen steps and lands on column 7, then the row-2 hits at columns 7 and 19 each add twelve more steps, ending at column 11."
 },
 {
-"id": "fable/04",
-"arm": "fable",
+"id": "fable-xhigh/04",
+"arm": "fable-xhigh",
 "model": "Fable 5.2",
 "effort": "xhigh",
 "run": 4,
@@ -945,8 +945,8 @@
 "last_thought": "\u2026the ball free to pass through the row-3 brick. I'm tracing how a misclassified ball at row 2 shifts the paddle's prediction by a few cells, and how a later bounce off row 1 adds another larger shift. I'm checking whether a ball that keeps bouncing between the ceiling and the bricks could push the paddle's predictions so far off that it can't recover in time."
 },
 {
-"id": "fable/05",
-"arm": "fable",
+"id": "fable-xhigh/05",
+"arm": "fable-xhigh",
 "model": "Fable 5.2",
 "effort": "xhigh",
 "run": 5,
@@ -972,8 +972,8 @@
 "last_thought": "\u2026ith its trail is still covered by the wall formula for left-moving states. Checking the start and end states of the paddle's ball-tracking formula against hand-traced ball paths, both come out to the expected centers. I'm checking the paddle's behavior at the top-left corner, where the ball is in a single-state case and the trail rows match the earlier ones."
 },
 {
-"id": "fable/06",
-"arm": "fable",
+"id": "fable-xhigh/06",
+"arm": "fable-xhigh",
 "model": "Fable 5.2",
 "effort": "xhigh",
 "run": 6,
@@ -999,8 +999,8 @@
 "last_thought": "\u2026g pair, so any remaining brick gets hit within that window. I'm checking whether the policy can ever get stuck in a brick-free loop: after each K-catch the next landing sits two cells over, so the paddle arrives early on the far side and catches it. Near the walls the paddle reaches its target a bit differently, so I'm setting those edge cases aside for now."
 },
 {
-"id": "fable/07",
-"arm": "fable",
+"id": "fable-xhigh/07",
+"arm": "fable-xhigh",
 "model": "Fable 5.2",
 "effort": "xhigh",
 "run": 7,
@@ -1026,8 +1026,8 @@
 "last_thought": "\u2026tables need recomputing for a=5, and I'm folding the row-4 descent and same-row modes into existing units and gates rather than adding new ones. Now I'm re-tracing the cycle with the flight lead at 5: the paddle holds on L0 at the start, descent starts at row 4, and it stays put through the descent rows until the ball reaches the straight segment at phase 6."
 },
 {
-"id": "fable/08",
-"arm": "fable",
+"id": "fable-xhigh/08",
+"arm": "fable-xhigh",
 "model": "Fable 5.2",
 "effort": "xhigh",
 "run": 8,
@@ -1053,8 +1053,8 @@
 "last_thought": "\u2026 trail uses the row itself. Still verifying the mode assignments for the ascent rows, checking how the ball and trail tables line up for rows 4 through 7. I'm checking the ascent case at row 4 against the \"immediately\" assumption: if the ball is heading up and hits a brick at row 3, the bounce frame lands at row 4 one phase later, so the zone is \u03c6+5 and \u03c6+6."
 },
 {
-"id": "fable/09",
-"arm": "fable",
+"id": "fable-xhigh/09",
+"arm": "fable-xhigh",
 "model": "Fable 5.2",
 "effort": "xhigh",
 "run": 9,

@@ -239,12 +239,12 @@ def main():
     jobs = queue.Queue()
     for k in range(a.target):  # round robin, so a stopped batch is balanced across models
         for model in a.models.split(","):
-            label = model if a.effort == "xhigh" else f"{model}-{a.effort}"
+            label = f"{model}-{a.effort}"
             done = sum(o in COUNTED for o in existing(HERE / "runs" / a.game / label).values())
             if k >= done:
                 jobs.put((label, model, 0))
     for model in a.models.split(","):  # counted runs a stopped batch left without a score
-        label = model if a.effort == "xhigh" else f"{model}-{a.effort}"
+        label = f"{model}-{a.effort}"
         for nn, o in existing(HERE / "runs" / a.game / label).items():
             d = HERE / "runs" / a.game / label / nn
             if o in COUNTED and not (d / "score.json").exists():

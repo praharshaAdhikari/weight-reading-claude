@@ -158,3 +158,9 @@ not a rule change: with the arithmetic worked out, all 42 statements read and th
 No earlier run wrote arithmetic in an index.
 
 **Amendment 4 finished (2026-11-23 13:53):** all 25 runs scored (2 before the 12:12 restart, 23 after).
+
+**Note (2026-11-23 15:30): arm folders renamed.** At the user's request the xhigh arms are now named like the others:
+`runs/breakout/haiku` → `haiku-xhigh`, and the same for sonnet, opus and fable. `run.py` now always labels a run
+`<model>-<effort>`. Paths inside score.json, the figure file names, the catch-rate file and the docs were updated to
+match. `logs/runs.log` is left as written, so its xhigh lines use the old names (`opus/03` is now `opus-xhigh/03`).
+No run, score or reading rule changed; `scores.png` re-renders byte-identical.

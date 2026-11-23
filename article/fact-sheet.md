@@ -38,10 +38,10 @@ https://huggingface.co/datasets/shawnghu/fable-weight-space-programming. Fable 5
 |---|---|---|
 | Total runs | 85 | 40 at xhigh, 40 at high, 5 at max |
 | Haiku xhigh | 0 of 10, median 0.54, best 0.54 | |
-| Sonnet xhigh | 6 of 10, median 29 (29.04), best 351 (351.4, sonnet/04) | |
-| Opus xhigh | 4 of 10, median 0.54, best 510 (510.4, opus/03) | finished: 57.2 (00), 134.2 (10), 502.7 (11), 510.4 (03) |
+| Sonnet xhigh | 6 of 10, median 29 (29.04), best 351 (351.4, sonnet-xhigh/04) | |
+| Opus xhigh | 4 of 10, median 0.54, best 510 (510.4, opus-xhigh/03) | finished: 57.2 (00), 134.2 (10), 502.7 (11), 510.4 (03) |
 | Fable xhigh | 0 of 10 | |
-| Opus's two best "about 17 minutes" | 17.4 and 17.9 min | opus/11, opus/03 |
+| Opus's two best "about 17 minutes" | 17.4 and 17.9 min | opus-xhigh/11, opus-xhigh/03 |
 | "beats RL by a factor of 20" | 510.4 / 25.3 = 20.2 | |
 | Sonnet: six of ten beat RL | 6 (all six finished networks are above 25.3) | lowest 26.7 |
 | xhigh runs that hit the 128K cap | 30 of 40 | `outcome == cut_off` |
@@ -55,7 +55,7 @@ https://huggingface.co/datasets/shawnghu/fable-weight-space-programming. Fable 5
 | Opus max | 0 of 5 | |
 | Fable high | 9 of 10, median 450 (449.77), best 503 (503.47) | |
 | Fable high, three networks level with Astra | 503.5 (03), 502.2 (05), 500.6 (08) | all within 2 SE of 502.9 |
-| Five Claude networks above 500 | opus/03 510.4, fable-high/03 503.5, opus/11 502.7, fable-high/05 502.2, fable-high/08 500.6 | |
+| Five Claude networks above 500 | opus-xhigh/03 510.4, fable-high/03 503.5, opus-xhigh/11 502.7, fable-high/05 502.2, fable-high/08 500.6 | |
 | Ball-follow rule | 8 (8.37) | `results/baselines/rule.json` |
 | Random play / empty network | 0.54 | `results/baselines/zero.json` |
 | p-values (Fisher exact, two-sided) | Fable 0→9 of 10: 0.0001; Opus 4→10: 0.011; Sonnet 6→10: 0.087 | computed 2026-11-23 |
@@ -65,27 +65,27 @@ https://huggingface.co/datasets/shawnghu/fable-weight-space-programming. Fable 5
 | Network | Score | Catches / misses | "1 in" |
 |---|---|---|---|
 | Fable best (fable-high/03) | 503.5 | 117,195 / 55 | 2,132 → 2,100 |
-| Opus best (opus/03) | 510.4 | 113,941 / 64 | 1,781 → 1,800 |
+| Opus best (opus-xhigh/03) | 510.4 | 113,941 / 64 | 1,781 → 1,800 |
 | Astra | 502.9 | 103,307 / 112 | 923 → 900 |
-| Opus worst finished (opus/00) | 57.2 | 18,773 / 200 | 95 |
+| Opus worst finished (opus-xhigh/00) | 57.2 | 18,773 / 200 | 95 |
 | Rule | 8.4 | 1,882 / 200 | 10 |
 
 Astra misses fewer balls per game partly because 517 of its 1,000 scoring games hit the 10,000-step cap.
 
-Identical play: fable-high/05 and opus/11, fable-high/04 and 07, and opus-high/06 and 08 have identical catch and miss counts
+Identical play: fable-high/05 and opus-xhigh/11, fable-high/04 and 07, and opus-high/06 and 08 have identical catch and miss counts
 although their weights differ (checked with np.array_equal). Their weights are large, so actions are near-deterministic, and
 the same choices on the same seeds give the same games.
 
 ## Not checkable by script (from reading the networks and Claude Code)
-- What units in opus-11's first layer do (2 direction units, 8 landing units): from the heatmap `results/figures/w1-opus-11.png`
-  and the reply's own description in `runs/breakout/opus/11/answer.md`.
+- What units in opus-xhigh-11's first layer do (2 direction units, 8 landing units): from the heatmap `results/figures/w1-opus-xhigh-11.png`
+  and the reply's own description in `runs/breakout/opus-xhigh/11/answer.md`.
 - Claude Code's continuation behavior, checked in the installed 2.1.330 build (`~/.local/share/claude/versions/2.1.330`):
   - the retry limit is a constant `bs=3`, next to the cut-reply code (`maxOutputTokensRecoveryCount+1; return g<=bs`): "up to three more times";
   - the message "Output token limit hit while you were still reasoning … reason much more briefly …" is in the same build.
   - Our runs received only the "Output token limit hit. Resume directly …" version (37 times in `runs/breakout/*/*/run.json`), and `run.py`
     stops at the first one.
 - "Hit the 128K limit": cut-off runs have no usage record. The evidence is Claude Code's output-limit message in each
-  run.json plus a final block that is thinking (28 runs) or text (sonnet/01, sonnet/08). Checked by the fact-check agent, 2026-11-23.
+  run.json plus a final block that is thinking (28 runs) or text (sonnet-xhigh/01, sonnet-xhigh/08). Checked by the fact-check agent, 2026-11-23.
 - About 650 tokens of Claude Code context: measured earlier in the session; the checker could not separate it from the prompt
   in the saved files (about 4,333 cache-creation tokens in all). Reproduce before the paper.
 
@@ -93,4 +93,4 @@ the same choices on the same seeds give the same games.
 Wording changed in the draft: "tenfold" → "ninefold" (57.2 vs 502.7/510.4); "Sonnet came close once" → "Sonnet's best was 351";
 "Haiku's are no better" → "similar; its best scored 20"; Fable high "best result" → "most reliable result" (Opus xhigh has the
 single highest score); Fable xhigh wording now says it hit the limit while thinking. The catch-rate table now uses
-opus/03 (510.4) for "Opus, best" and adds Fable's best.
+opus-xhigh/03 (510.4) for "Opus, best" and adds Fable's best.

@@ -82,9 +82,9 @@ def make_gif(source, out, label, seed=0, steps=400):
     return len(ims), frames[-1][1], done
 
 
-ARMS = [("haiku-high", "Haiku 5.5 · high"), ("haiku", "Haiku 5.5 · xhigh"), ("sonnet-high", "Sonnet 5.5 · high"),
-        ("sonnet", "Sonnet 5.5 · xhigh"), ("opus-high", "Opus 5.5 · high"), ("opus", "Opus 5.5 · xhigh"),
-        ("opus-max", "Opus 5.5 · max"), ("fable-high", "Fable 5.2 · high"), ("fable", "Fable 5.2 · xhigh")]
+ARMS = [("haiku-high", "Haiku 5.5 · high"), ("haiku-xhigh", "Haiku 5.5 · xhigh"), ("sonnet-high", "Sonnet 5.5 · high"),
+        ("sonnet-xhigh", "Sonnet 5.5 · xhigh"), ("opus-high", "Opus 5.5 · high"), ("opus-xhigh", "Opus 5.5 · xhigh"),
+        ("opus-max", "Opus 5.5 · max"), ("fable-high", "Fable 5.2 · high"), ("fable-xhigh", "Fable 5.2 · xhigh")]
 REFS = [(0.54, "random", "center"), (8.37, "ball-follow rule ", "right"), (25.3, " PPO 500M steps", "left"),
         (502.9, "GPT-6 Astra", "center")]
 
