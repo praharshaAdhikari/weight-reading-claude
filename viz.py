@@ -128,13 +128,13 @@ def dots(out):
         for side in ("top", "right", "left"):
             ax.spines[side].set_visible(False)
         ax.set_yscale("log")
-        ax.set_ylim(0.3, 1600)  # headroom so the best-score label clears the subtitle
+        ax.set_ylim(0.3, 2600)  # headroom so the best-score label clears the subtitle
         ax.set_xlim(0, CAP1)
         for v in (1, 10, 100):
             ax.axhline(v, color=GRID, lw=0.6, zorder=0)
         ax.axvspan(CAP0, CAP1, color="#f0efea", zorder=0, lw=0)
-        ax.text((CAP0 + CAP1) / 2, 0.3, "hit the\n128K cap", ha="center", va="top", fontsize=8.5, color=MUTED,
-                transform=ax.transData)
+        ax.text((CAP0 + CAP1) / 2, 2300, "hit the\n128K cap", ha="center", va="top", fontsize=8.5, color=MUTED,
+                linespacing=1.2)  # top of the grey column: empty, and clear of the 128K tick below
         for v, name in REFS:
             ax.axhline(v, color=TRAIL, lw=1, ls=(0, (5, 4)), zorder=1)
             ax.text(CAP1 + 2, v, name, va="center", fontsize=8.5, color=MUTED, clip_on=False)
@@ -172,7 +172,7 @@ def dots(out):
         axs[0, 0].scatter([], [], marker=mk, edgecolors=INK, facecolors=INK if f else CARD, s=46, linewidths=1.4,
                           label=e)
     axs[0, 0].scatter([], [], marker=">", edgecolors=INK, facecolors=INK, s=34, label="cut off at the cap (no network)")
-    fig.subplots_adjust(left=0.07, right=0.915, top=0.885, bottom=0.234)
+    fig.subplots_adjust(left=0.07, right=0.915, top=0.885, bottom=0.228)
     # cards: one rounded white box per panel, the same overhang on every panel (the largest one needed)
     fig.canvas.draw()
     inv, rend = fig.transFigure.inverted(), fig.canvas.get_renderer()
