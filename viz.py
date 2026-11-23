@@ -239,7 +239,8 @@ def w1(net_path, out, title="", subtitle=""):
         model, effort = run.parent.name.split("-")
         name = dict((k, n) for k, n, _ in MODELS)[model]
         sc = json.loads((run / "score.json").read_text())["mean"]
-        title, subtitle = f"{name} · {effort} · run {run.name}", f"scores {sc:.1f} · uses {len(units)} of 32 hidden units"
+        title = f"{name} · {effort}"  # readers know a network by its score; run numbers stay in the repo
+        subtitle = f"the {sc:.1f}-point network · uses {len(units)} of 32 hidden units"
     cmap = LinearSegmentedColormap.from_list("div", ["#1c5cab", "#86b6ef", "#f0efec", "#f19a96", "#e34948"])
     n, m = len(units), len(chans)
     fig, axes = plt.subplots(m, n, figsize=(0.95 * n + 1.9, 1.05 * m + 3.4), dpi=200, facecolor=BG, squeeze=False,
