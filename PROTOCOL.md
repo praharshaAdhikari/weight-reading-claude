@@ -137,7 +137,10 @@ No result was known when these were changed.
   about $4.70 of API-equivalent usage, so this arm (at most about $35) is around 7 points and cannot reach the cap
   even if the reading stays wrong.
 
-## Amendment 4 (2026-11-23 09:05)
+## Amendment 4 (2026-11-23 09:05), on hold
+**Status:** started at 09:01 and stopped by the user after about 20 seconds; the two runs in progress were moved to
+`runs/_stopped_by_restart/` and are not counted. No run of this amendment exists yet.
+
 Added after seeing the results of every arm above, so these arms are exploratory, not pre-registered.
 - **Why:** at effort high, Haiku finished 9 of 10 and Fable 4 of 5, against 0 of 10 each at xhigh. Opus finished
   4 of 10 at xhigh and 0 of 5 at max, and had no runs at high. Sonnet ran only at xhigh.
