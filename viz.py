@@ -6,7 +6,7 @@
   viz.py pair SOURCE SOURCE OUT.gif --labels TEXT TEXT [--seed 0] [--steps 400]
       Two sources side by side on the same game seed.
   viz.py tables FILE.md PREFIX
-      Each Markdown table in FILE as PREFIX1.png, PREFIX2.png, ... (Medium has no tables).
+      Each Markdown table in FILE (article/tables.md) as PREFIX1.png, PREFIX2.png, ... (Medium has no tables).
   viz.py dots OUT.png
       Every counted run: score against output tokens, one panel per model; runs cut off at the cap stacked past it.
   viz.py w1 NET.npz OUT.png [--title TEXT] [--subtitle TEXT]
