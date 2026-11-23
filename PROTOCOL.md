@@ -147,3 +147,5 @@ Added after seeing the results of every arm above, so these arms are exploratory
 - **What:** effort high for Fable 5.2 (5 more runs, making 10), Opus 5.5 (10 runs) and Sonnet 5.5 (10 runs).
   Everything else as in the protocol and Amendment 1. Same 60% caps for both usage windows.
 - **Expected usage:** about 10 weekly points (about $45 of API-equivalent cost).
+- 12:12: the user raised the 5-hour cap to 95% for this batch (the window resets at 12:55). Weekly cap unchanged at 60%.
+  The batch was paused with no run in progress, so the restart lost nothing.
