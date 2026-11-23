@@ -3,6 +3,8 @@
 
   viz.py gif SOURCE OUT.gif [--label TEXT] [--seed 0] [--steps 400]
       SOURCE: a network (.npz), 'zero' or 'rule'. One Breakout episode, played as score.py plays it.
+  viz.py pair SOURCE SOURCE OUT.gif --labels TEXT TEXT [--seed 0] [--steps 400]
+      Two sources side by side on the same game seed.
   viz.py dots OUT.png
       Every counted run: score against output tokens, one panel per model; runs cut off at the cap stacked past it.
   viz.py w1 NET.npz OUT.png [--title TEXT] [--subtitle TEXT]
@@ -101,6 +103,33 @@ def make_gif(source, out, label, seed=0, steps=400):
     durations = [50] * (len(ims) - 1) + [1500]
     ims[0].save(out, save_all=True, append_images=ims[1:], duration=durations, loop=0, optimize=True)
     return len(ims), frames[-1][1], done
+
+
+def make_pair(sources, out, labels, seed=0, steps=400):
+    """Two networks side by side on the same game seed; one that ends first holds its last frame."""
+    f_big, f_small = font(44, "Semibold"), font(40)
+    eps = [episode_frames(src, seed, steps) for src in sources]
+    n = max(len(frames) for frames, _, _ in eps)
+    ims = []
+    for i in range(n):
+        cards = []
+        for (frames, ch, done), label in zip(eps, labels):
+            state, total = frames[min(i, len(frames) - 1)]
+            cards.append(draw(state, ch, total, label, f_big, f_small, over=done and i >= len(frames) - 1))
+        w = cards[0].width - PAD  # overlap the margins, so the gap between cards equals the outer margin
+        im = Image.new("RGB", (w * len(cards) + PAD, cards[0].height), BG)
+        for k, c in enumerate(cards):
+            im.paste(c, (k * w, 0))
+        ims.append(im)
+    ims[0].save(out, save_all=True, append_images=ims[1:], duration=[50] * (n - 1) + [1500], loop=0, optimize=True)
+    return n, [frames[-1][1] for frames, _, _ in eps]
+
+
+def load_source(source):
+    """'rule', 'zero' or a network .npz."""
+    if source == "rule":
+        return source
+    return {k: np.zeros(s, np.float32) for k, s in score.SHAPES.items()} if source == "zero" else score.load_net(source)
 
 
 ARMS = [("haiku-high", "Haiku 5.5 · high"), ("haiku-xhigh", "Haiku 5.5 · xhigh"), ("sonnet-high", "Sonnet 5.5 · high"),
@@ -303,6 +332,13 @@ def main():
     g.add_argument("--label", default="")
     g.add_argument("--seed", type=int, default=0)
     g.add_argument("--steps", type=int, default=400)
+    pr = sub.add_parser("pair")
+    pr.add_argument("a")
+    pr.add_argument("b")
+    pr.add_argument("out")
+    pr.add_argument("--labels", nargs=2, required=True)
+    pr.add_argument("--seed", type=int, default=0)
+    pr.add_argument("--steps", type=int, default=400)
     sub.add_parser("dots").add_argument("out")
     h = sub.add_parser("w1")
     h.add_argument("net")
@@ -316,10 +352,11 @@ def main():
     if a.cmd == "dots":
         dots(a.out)
         print(a.out)
+    if a.cmd == "pair":
+        n, totals = make_pair([load_source(a.a), load_source(a.b)], a.out, a.labels, a.seed, a.steps)
+        print(f"{a.out}: {n} frames, scores {totals}")
     if a.cmd == "gif":
-        src = a.source if a.source == "rule" else (
-            {k: np.zeros(s, np.float32) for k, s in score.SHAPES.items()} if a.source == "zero" else score.load_net(a.source))
-        n, total, done = make_gif(src, a.out, a.label, a.seed, a.steps)
+        n, total, done = make_gif(load_source(a.source), a.out, a.label, a.seed, a.steps)
         print(f"{a.out}: {n} frames, score {int(total)}{', game over' if done else ''}")
 
 
