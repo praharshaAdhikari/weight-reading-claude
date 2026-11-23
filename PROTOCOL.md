@@ -175,3 +175,10 @@ Added after seeing the results of every arm above, so this arm is exploratory, n
 - **Rule, set before the first run:** if at least one of the 5 runs finishes (writes a network), the arm is extended
   to 10 runs, on the user's go. If none finishes, it stops at 5.
 - **Expected:** most or all runs cut off at the cap; about $1.30 API-equivalent each if they run to the cap.
+
+**Amendment 5 finished (2026-11-24 00:53):** 5 of 5 cut off at the cap, no network, each scored 0.54 (random play),
+18.8 to 19.1 min each. By the rule above the arm stops at 5. Weekly usage went from 13% to 16%.
+Each run logged one `api_retry` about 5K estimated thinking tokens in (error "unknown", retried after 0.6 s); no earlier
+run had one. The thinking-token estimate kept counting through it and ended at 73.5K to 75.6K, as Opus at max did
+with no retry (72.4K), and each run ended at Claude Code's "Output token limit hit" follow-up. The cut-offs are the
+model's, not the retry's, so all five count.
