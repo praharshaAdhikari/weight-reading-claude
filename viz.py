@@ -5,6 +5,8 @@
       SOURCE: a network (.npz), 'zero' or 'rule'. One Breakout episode, played as score.py plays it.
   viz.py pair SOURCE SOURCE OUT.gif --labels TEXT TEXT [--seed 0] [--steps 400]
       Two sources side by side on the same game seed.
+  viz.py tables FILE.md PREFIX
+      Each Markdown table in FILE as PREFIX1.png, PREFIX2.png, ... (Medium has no tables).
   viz.py dots OUT.png
       Every counted run: score against output tokens, one panel per model; runs cut off at the cap stacked past it.
   viz.py w1 NET.npz OUT.png [--title TEXT] [--subtitle TEXT]
@@ -123,6 +125,52 @@ def make_pair(sources, out, labels, seed=0, steps=400):
         ims.append(im)
     ims[0].save(out, save_all=True, append_images=ims[1:], duration=[50] * (n - 1) + [1500], loop=0, optimize=True)
     return n, [frames[-1][1] for frames, _, _ in eps]
+
+
+def md_tables(path):
+    """Every Markdown table in a file, as lists of rows of cell strings (the --- row dropped)."""
+    tables, cur = [], []
+    for line in Path(path).read_text().splitlines() + [""]:
+        if line.startswith("|"):
+            cells = [c.strip() for c in line.strip().strip("|").split("|")]
+            if not all(set(c) <= set("-: ") for c in cells):
+                cur.append(cells)
+        elif cur:
+            tables.append(cur)
+            cur = []
+    return tables
+
+
+def table_png(rows, out, k=2):
+    """A Markdown table as a card image for Medium, which has no tables. **bold** cells are drawn semibold."""
+    import re
+    rows = [[re.sub(r'"([^"]*)"', "\u201c\\1\u201d", c) for c in r] for r in rows]  # curly quotes, as Medium's text
+    group = [i > 1 and r[0] == rows[i - 1][0] for i, r in enumerate(rows)]  # repeated first cell: same group
+    f_head, f_reg, f_bold = font(15 * k, "Semibold"), font(16 * k), font(16 * k, "Semibold")
+    cell = lambda c: (c.replace("**", ""), f_bold if c.startswith("**") else f_reg)
+    padx, rowh, gap = 22 * k, 46 * k, 40 * k
+    meas = ImageDraw.Draw(Image.new("RGB", (1, 1)))
+    widths = [max(meas.textlength(*cell(r[j])) if i else meas.textlength(r[j], f_head) for i, r in enumerate(rows))
+              for j in range(len(rows[0]))]
+    W = int(sum(widths) + gap * (len(widths) - 1) + 2 * padx)
+    H = rowh * len(rows) + 16 * k
+    m = PAD * k
+    im = Image.new("RGB", (W + 2 * m, H + 2 * m), BG)
+    d = ImageDraw.Draw(im)
+    d.rounded_rectangle([m, m, m + W, m + H], radius=14 * k, fill=CARD, outline=GRID, width=k)
+    for i, r in enumerate(rows):
+        y = m + 8 * k + rowh * i + rowh / 2
+        if i:
+            d.line([m + padx, y - rowh / 2, m + W - padx, y - rowh / 2],
+                   fill=MUTED if i == 1 else "#f0efea" if group[i] else GRID, width=k)
+        x = m + padx
+        for j, c in enumerate(r):
+            text, f = (c.replace("**", ""), f_head) if i == 0 else cell(c)
+            if not (j == 0 and group[i]):  # model named once per group
+                d.text((x, y), text, fill=MUTED if i == 0 else INK, font=f, anchor="lm")
+            x += widths[j] + gap
+    im.save(out)
+    return im.size
 
 
 def load_source(source):
@@ -341,6 +389,9 @@ def main():
     pr.add_argument("--labels", nargs=2, required=True)
     pr.add_argument("--seed", type=int, default=0)
     pr.add_argument("--steps", type=int, default=400)
+    tb = sub.add_parser("tables")
+    tb.add_argument("markdown")
+    tb.add_argument("prefix")
     sub.add_parser("dots").add_argument("out")
     h = sub.add_parser("w1")
     h.add_argument("net")
@@ -351,6 +402,9 @@ def main():
     if a.cmd == "w1":
         w1(a.net, a.out, a.title, a.subtitle)
         print(a.out)
+    if a.cmd == "tables":
+        for n, rows in enumerate(md_tables(a.markdown), 1):
+            print(f"{a.prefix}{n}.png", table_png(rows, f"{a.prefix}{n}.png"))
     if a.cmd == "dots":
         dots(a.out)
         print(a.out)
