@@ -157,4 +157,4 @@ these statements as unreadable. The official score stays 0.00 (24 of 42 statemen
 not a rule change: with the arithmetic worked out, all 42 statements read and the network scores 5.76 ± 0.20.
 No earlier run wrote arithmetic in an index.
 
-**Amendment 4 finished (2026-11-23 13:53):** 23/23 scored (plus fable-high/05 and 06–09 as planned). No infra reruns.
+**Amendment 4 finished (2026-11-23 13:53):** all 25 runs scored (2 before the 12:12 restart, 23 after).
