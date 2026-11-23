@@ -137,7 +137,7 @@ No result was known when these were changed.
   about $4.70 of API-equivalent usage, so this arm (at most about $35) is around 7 points and cannot reach the cap
   even if the reading stays wrong.
 
-## Amendment 4 (2026-11-23 09:05), on hold
+## Amendment 4 (2026-11-23 09:05), started 11:27 on the user's go
 **Status:** started at 09:01 and stopped by the user after about 20 seconds; the two runs in progress were moved to
 `runs/_stopped_by_restart/` and are not counted. No run of this amendment exists yet.
 
