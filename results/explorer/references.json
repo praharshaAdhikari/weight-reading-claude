@@ -1,0 +1,22 @@
+[
+{
+"name": "Random play (empty network)",
+"score": 0.54,
+"source": "results/baselines/zero.json"
+},
+{
+"name": "Follow-the-ball rule",
+"score": 8.37,
+"source": "results/baselines/rule.json"
+},
+{
+"name": "PPO, 500M steps",
+"score": 25.3,
+"source": "Sparks of Weight-Space Programming, Experiment 5"
+},
+{
+"name": "GPT-6 Astra (our scorer)",
+"score": 502.88,
+"source": "results/baselines/astra.json"
+}
+]
