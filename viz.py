@@ -172,7 +172,7 @@ def dots(out):
         axs[0, 0].scatter([], [], marker=mk, edgecolors=INK, facecolors=INK if f else CARD, s=46, linewidths=1.4,
                           label=e)
     axs[0, 0].scatter([], [], marker=">", edgecolors=INK, facecolors=INK, s=34, label="cut off at the cap (no network)")
-    fig.subplots_adjust(left=0.07, right=0.915, top=0.885, bottom=0.215)
+    fig.subplots_adjust(left=0.07, right=0.915, top=0.885, bottom=0.234)
     # cards: one rounded white box per panel, the same overhang on every panel (the largest one needed)
     fig.canvas.draw()
     inv, rend = fig.transFigure.inverted(), fig.canvas.get_renderer()
@@ -192,17 +192,21 @@ def dots(out):
     # legend just above the cards; axis name just below them; notes in a full-width card of their own
     fig.legend(loc="lower center", bbox_to_anchor=(0.5, top + 0.008), ncol=4, frameon=False, fontsize=9.5)
     fig.text(0.5, bottom - 0.022, "output tokens, almost all thinking", ha="center", va="top", color=MUTED)
-    ny0, ny1 = 0.022, bottom - 0.068
+    # notes: one heading + text per column of cards; the card is sized from the drawn text, equal padding all round
+    import textwrap
+    notes = [("Marks", "Each mark is one run of Claude through claude -p: one reply, MinAtar Breakout. A run cut off"
+                       " at the cap wrote no network and plays at random (0.54)."),
+             ("Dashed lines", "Random play (0.54), the follow-the-ball rule (8.4), PPO after 500M steps (25.3)"
+                              " and GPT-6\u00a0Astra's network under the same scorer (502.9).")]
+    ny1, pad = bottom - 0.062, 0.018
+    texts = []
+    for cx, (head, body) in zip((x0, boxes[1][0].x0 - L), notes):
+        fig.text(cx + padx, ny1 - pad, head, fontsize=8.5, fontweight="semibold", color=INK, va="top")
+        texts.append(fig.text(cx + padx, ny1 - pad - 0.024, textwrap.fill(body, 88, break_on_hyphens=False),
+                              fontsize=8.5, color=MUTED, va="top", linespacing=1.5))
+    fig.canvas.draw()
+    ny0 = min(t.get_window_extent(rend).transformed(inv).y0 for t in texts) - pad + 0.006  # text box includes descent
     fig.patches.append(matplotlib.patches.FancyBboxPatch((x0, ny0), x1 - x0, ny1 - ny0, **card))
-    fig.text(x0 + padx, ny1 - 0.016, "Notes", fontsize=8.5, fontweight="semibold", color=INK, va="top")
-    import textwrap  # two notes side by side, each under its column of cards
-    notes = ["Each mark is one run. A run cut off at the cap wrote no network and plays as the all-zero network"
-             " (random play, 0.54).",
-             "Dashed lines: random play, the follow-the-ball rule, PPO after 500M steps, GPT-6\u00a0Astra."
-             " Claude via claude -p, one reply; MinAtar Breakout."]
-    for cx, note in zip((x0, boxes[1][0].x0 - L), notes):
-        fig.text(cx + padx, ny1 - 0.040, textwrap.fill(note, 92, break_on_hyphens=False), fontsize=8.5, color=MUTED, va="top",
-                 linespacing=1.5)
     fig.savefig(out, facecolor=BG)
 
 
