@@ -82,9 +82,9 @@ def make_gif(source, out, label, seed=0, steps=400):
     return len(ims), frames[-1][1], done
 
 
-ARMS = [("haiku", "Haiku 5.5 · xhigh"), ("haiku-high", "Haiku 5.5 · high"), ("sonnet", "Sonnet 5.5 · xhigh"),
-        ("opus", "Opus 5.5 · xhigh"), ("opus-max", "Opus 5.5 · max"), ("fable", "Fable 5.2 · xhigh"),
-        ("fable-high", "Fable 5.2 · high")]
+ARMS = [("haiku-high", "Haiku 5.5 · high"), ("haiku", "Haiku 5.5 · xhigh"), ("sonnet-high", "Sonnet 5.5 · high"),
+        ("sonnet", "Sonnet 5.5 · xhigh"), ("opus-high", "Opus 5.5 · high"), ("opus", "Opus 5.5 · xhigh"),
+        ("opus-max", "Opus 5.5 · max"), ("fable-high", "Fable 5.2 · high"), ("fable", "Fable 5.2 · xhigh")]
 REFS = [(0.54, "random", "center"), (8.37, "ball-follow rule ", "right"), (25.3, " PPO 500M steps", "left"),
         (502.9, "GPT-6 Astra", "center")]
 
@@ -145,13 +145,14 @@ def dots(out):
                 ax.scatter(0.54, y, **m, **STYLE[kind])
                 ax.text(0.63, y, f"×{k}", va="center", fontsize=9, color=MUTED)
         placed = []
+        top2 = sorted((r["score"] for r in runs if r["kind"] == "wrote"), reverse=True)[:2]  # more labels collide
         for r in sorted((r for r in runs if r["kind"] == "wrote"), key=lambda r: r["score"]):
             lx, k = np.log10(r["score"]), 0
             while any(abs(lx - px) < 0.045 and pk == k for px, pk in placed):
                 k += 1
             placed.append((lx, k))
             ax.scatter(r["score"], row + 0.15 * ((k + 1) // 2) * (1 if k % 2 else -1), **m, **STYLE["wrote"])
-            if r["score"] >= 300:
+            if r["score"] >= 300 and r["score"] in top2:
                 ax.text(r["score"] * 1.18, row + 0.15 * ((k + 1) // 2) * (1 if k % 2 else -1), f"{r['score']:.0f}",
                         va="center", fontsize=8.5, color=INK)
     ax.set_xscale("log")

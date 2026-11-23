@@ -156,3 +156,5 @@ sonnet-high/04 wrote 18 statements like `W1[6*1+3:600:60, 0] = 6`, copying the f
 these statements as unreadable. The official score stays 0.00 (24 of 42 statements read). As a sensitivity check,
 not a rule change: with the arithmetic worked out, all 42 statements read and the network scores 5.76 ± 0.20.
 No earlier run wrote arithmetic in an index.
+
+**Amendment 4 finished (2026-11-23 13:53):** 23/23 scored (plus fable-high/05 and 06–09 as planned). No infra reruns.
