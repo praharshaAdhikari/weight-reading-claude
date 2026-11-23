@@ -5,7 +5,7 @@
       SOURCE: a network (.npz), 'zero' or 'rule'. One Breakout episode, played as score.py plays it.
   viz.py dots OUT.png
       Every counted run: score against output tokens, one panel per model; runs cut off at the cap stacked past it.
-  viz.py w1 NET.npz OUT.png [--title TEXT]
+  viz.py w1 NET.npz OUT.png [--title TEXT] [--subtitle TEXT]
       First-layer weights of every hidden unit the network uses, one 10 x 10 map per input channel.
 """
 import argparse
@@ -18,18 +18,36 @@ from PIL import Image, ImageDraw, ImageFont
 import score
 
 # reference palette (dataviz skill), light mode: Medium pages are light
-SURFACE, GRID, INK, MUTED = "#fcfcfb", "#e1e0d9", "#0b0b0b", "#898781"
+GRID, INK, MUTED = "#e1e0d9", "#0b0b0b", "#898781"
+BG, CARD = "#f3f2ee", "#ffffff"  # page tint, so each panel reads as its own white card (all figures)
 PADDLE, BRICK, BALL, TRAIL = "#2a78d6", "#eb6834", "#0b0b0b", "#c3c2b7"
-CELL, HEAD = 28, 34
+OPEN_SANS = "/usr/share/fonts/open-sans/OpenSans-{}.ttf"  # static Open Sans (Google Fonts)
+CELL, PAD, HEAD = 44, 20, 56  # GIF: board cell, page margin, header height (px)
 
 
-def font(size):
-    for f in ("/usr/share/fonts/google-noto-vf/NotoSans[wght].ttf", "DejaVuSans.ttf"):
-        try:
-            return ImageFont.truetype(f, size)
-        except OSError:
-            pass
-    return ImageFont.load_default()
+def font(size, weight="Regular"):
+    return ImageFont.truetype(OPEN_SANS.format(weight), size)
+
+
+def mpl_style():
+    """matplotlib with the figures' shared look; returns (plt, matplotlib)."""
+    import matplotlib
+    matplotlib.use("Agg")
+    import matplotlib.pyplot as plt
+    from matplotlib import font_manager
+    for w in ("Regular", "Semibold"):
+        font_manager.fontManager.addfont(OPEN_SANS.format(w))
+    plt.rcParams.update({"font.family": "Open Sans", "font.size": 10.5, "axes.edgecolor": GRID,
+                         "text.hinting": "no_hinting", "text.hinting_factor": 1,  # unhinted draws smoother in Agg
+                         "xtick.color": MUTED, "ytick.color": MUTED, "axes.labelcolor": MUTED})
+    return plt, matplotlib
+
+
+def card(fig, x0, y0, x1, y1, matplotlib):
+    """A rounded white card behind figure coordinates (x0, y0)-(x1, y1)."""
+    fig.patches.append(matplotlib.patches.FancyBboxPatch(
+        (x0, y0), x1 - x0, y1 - y0, transform=fig.transFigure, zorder=-1, boxstyle="round,pad=0,rounding_size=0.012",
+        facecolor=CARD, edgecolor=GRID, lw=1))
 
 
 def episode_frames(source, seed=0, steps=400, game="breakout"):
@@ -52,28 +70,31 @@ def episode_frames(source, seed=0, steps=400, game="breakout"):
     return out, env.env.channels, done
 
 
-def draw(state, ch, total, label, f_big, f_small, over=False):
-    W = 10 * CELL
-    im = Image.new("RGB", (W, HEAD + W), SURFACE)
+def draw(state, ch, total, label, f_big, f_small, over=False, k=2):
+    """One frame, drawn at k times the size and scaled down: PIL shapes have no anti-aliasing of their own."""
+    C, P, W = CELL * k, PAD * k, 10 * CELL * k
+    X, Y = P + 16 * k, P + HEAD * k  # board origin inside the card
+    im = Image.new("RGB", (W + 2 * X, Y + W + 16 * k + P), BG)
     d = ImageDraw.Draw(im)
-    d.text((8, 8), label, fill=INK, font=f_big)
-    d.text((W - 8, 8), f"score {int(total)}", fill=INK, font=f_big, anchor="ra")
+    d.rounded_rectangle([P, P, im.width - P - 1, im.height - P - 1], radius=14 * k, fill=CARD, outline=GRID, width=k)
+    d.text((X, P + HEAD * k / 2), label, fill=INK, font=f_big, anchor="lm")
+    d.text((X + W, P + HEAD * k / 2), f"score {int(total)}", fill=MUTED, font=f_small, anchor="rm")
     for i in range(11):
-        d.line([(0, HEAD + i * CELL), (W, HEAD + i * CELL)], fill=GRID)
-        d.line([(i * CELL, HEAD), (i * CELL, HEAD + W)], fill=GRID)
-    for name, color, pad in (("trail", TRAIL, 9), ("brick", BRICK, 2), ("paddle", PADDLE, 2), ("ball", BALL, 6)):
+        d.line([(X, Y + i * C), (X + W, Y + i * C)], fill="#efeee9", width=k)
+        d.line([(X + i * C, Y), (X + i * C, Y + W)], fill="#efeee9", width=k)
+    for name, color, pad in (("trail", TRAIL, 14), ("brick", BRICK, 3), ("paddle", PADDLE, 3), ("ball", BALL, 9)):
         for y, x in np.argwhere(state[:, :, ch[name]]):
-            box = [x * CELL + pad, HEAD + y * CELL + pad, (x + 1) * CELL - pad, HEAD + (y + 1) * CELL - pad]
+            box = [X + x * C + pad * k, Y + y * C + pad * k, X + (x + 1) * C - pad * k, Y + (y + 1) * C - pad * k]
             (d.ellipse if name in ("ball", "trail") else d.rounded_rectangle)(box, fill=color, **(
-                {"radius": 4} if name not in ("ball", "trail") else {}))
+                {"radius": 6 * k} if name not in ("ball", "trail") else {}))
     if over:
-        d.text((W // 2, HEAD + W // 2), "game over", fill=MUTED, font=f_small, anchor="mm")
-    return im
+        d.text((X + W // 2, Y + W // 2), "game over", fill=MUTED, font=f_big, anchor="mm")
+    return im.resize((im.width // k, im.height // k), Image.LANCZOS)
 
 
 def make_gif(source, out, label, seed=0, steps=400):
     frames, ch, done = episode_frames(source, seed, steps)
-    f_big, f_small = font(16), font(14)
+    f_big, f_small = font(44, "Semibold"), font(40)  # drawn at 2x, see draw()
     ims = [draw(s, ch, t, label, f_big, f_small) for s, t in frames[:-1]]
     s, t = frames[-1]
     ims.append(draw(s, ch, t, label, f_big, f_small, over=done))
@@ -108,16 +129,7 @@ def counted_runs(label, game="breakout"):
 
 def dots(out):
     """One panel per model, score against output tokens; runs cut off at the 128K cap stack as arrows past it."""
-    import matplotlib
-    matplotlib.use("Agg")
-    import matplotlib.pyplot as plt
-    from matplotlib import font_manager
-    for w in ("Regular", "Semibold"):  # static Open Sans (Google Fonts); unhinted text draws smoother in Agg
-        font_manager.fontManager.addfont(f"/usr/share/fonts/open-sans/OpenSans-{w}.ttf")
-    plt.rcParams.update({"font.family": "Open Sans", "font.size": 10.5, "axes.edgecolor": GRID,
-                         "text.hinting": "no_hinting", "text.hinting_factor": 1,
-                         "xtick.color": MUTED, "ytick.color": MUTED, "axes.labelcolor": MUTED})
-    BG, CARD = "#f3f2ee", "#ffffff"  # page tint, so each panel reads as its own white card
+    plt, matplotlib = mpl_style()
     fig, axs = plt.subplots(2, 2, figsize=(12, 9.6), dpi=200, facecolor=BG, sharex=True, sharey=True,
                             gridspec_kw={"hspace": 0.55, "wspace": 0.3})
     CAP0, CAP1 = 134, 166  # the column past the cap, in thousands of tokens
@@ -182,11 +194,8 @@ def dots(out):
     R = max(t.x1 - p.x1 for p, t in boxes) + padx
     B = max(p.y0 - t.y0 for p, t in boxes) + pady
     T = max(t.y1 - p.y1 for p, t in boxes) + pady
-    card = dict(transform=fig.transFigure, zorder=-1, boxstyle="round,pad=0,rounding_size=0.012", facecolor=CARD,
-                edgecolor=GRID, lw=1)
     for p, _ in boxes:
-        fig.patches.append(matplotlib.patches.FancyBboxPatch((p.x0 - L, p.y0 - B), p.width + L + R,
-                                                             p.height + B + T, **card))
+        card(fig, p.x0 - L, p.y0 - B, p.x1 + R, p.y1 + T, matplotlib)
     x0, x1 = boxes[0][0].x0 - L, boxes[1][0].x1 + R
     top, bottom = boxes[0][0].y1 + T, boxes[2][0].y0 - B
     # legend just above the cards; axis name just below them; notes in a full-width card of their own
@@ -208,29 +217,35 @@ def dots(out):
                               fontsize=8.5, color=MUTED, va="top", linespacing=1.5))
     fig.canvas.draw()
     ny0 = min(t.get_window_extent(rend).transformed(inv).y0 for t in texts) - pad + 0.006  # text box includes descent
-    fig.patches.append(matplotlib.patches.FancyBboxPatch((x0, ny0), x1 - x0, ny1 - ny0, **card))
+    card(fig, x0, ny0, x1, ny1, matplotlib)
     fig.savefig(out, facecolor=BG)
 
 
 CHANNELS = [(0, "paddle"), (3, "ball"), (4, "ball's last cell")]  # the only inputs Breakout fills, besides bricks
 
 
-def w1(net_path, out, title=""):
-    import matplotlib
-    matplotlib.use("Agg")
-    import matplotlib.pyplot as plt
-    from matplotlib import font_manager
+def w1(net_path, out, title="", subtitle=""):
+    """First-layer weights, one 10 x 10 map per (input channel, hidden unit used), in Figure 1's card style."""
+    import textwrap
     from matplotlib.colors import LinearSegmentedColormap
-    font_manager.fontManager.addfont("/usr/share/fonts/google-noto-vf/NotoSans[wght].ttf")
-    plt.rcParams.update({"font.family": "Noto Sans", "font.size": 10})
+    plt, matplotlib = mpl_style()
     W = score.load_net(net_path)["W1"].reshape(10, 10, 6, 32)  # input i = (row*10 + col)*6 + channel
-    chans = CHANNELS + [(2, "bricks")] * bool(np.abs(W[:, :, 2]).sum())
+    bricks = bool(np.abs(W[:, :, 2]).sum())
+    chans = CHANNELS + [(2, "bricks")] * bricks
     units = [u for u in range(32) if np.abs(W[..., u]).sum()]
     lim = float(np.percentile(np.abs(W[W != 0]), 98))  # a few huge weights would wash out the rest
+    if not title:  # from the run folder: runs/breakout/<model>-<effort>/<nn>/net.npz
+        run = Path(net_path).parent
+        model, effort = run.parent.name.split("-")
+        name = dict((k, n) for k, n, _ in MODELS)[model]
+        sc = json.loads((run / "score.json").read_text())["mean"]
+        title, subtitle = f"{name} · {effort} · run {run.name}", f"scores {sc:.1f} · uses {len(units)} of 32 hidden units"
     cmap = LinearSegmentedColormap.from_list("div", ["#1c5cab", "#86b6ef", "#f0efec", "#f19a96", "#e34948"])
-    fig, axes = plt.subplots(len(chans), len(units), figsize=(0.95 * len(units) + 1.4, 1.05 * len(chans) + 1.2),
-                             dpi=200, facecolor=SURFACE, squeeze=False)
-    for r, (c, name) in enumerate(chans):
+    n, m = len(units), len(chans)
+    fig, axes = plt.subplots(m, n, figsize=(0.95 * n + 1.9, 1.05 * m + 3.4), dpi=200, facecolor=BG, squeeze=False,
+                             gridspec_kw={"wspace": 0.14, "hspace": 0.14})
+    fig.subplots_adjust(left=0.135, right=0.975, top=0.80, bottom=0.40)
+    for r, (c, label) in enumerate(chans):
         for k, u in enumerate(units):
             ax = axes[r][k]
             im = ax.imshow(W[:, :, c, u], cmap=cmap, vmin=-lim, vmax=lim)
@@ -238,16 +253,44 @@ def w1(net_path, out, title=""):
             for sp in ax.spines.values():
                 sp.set_color(GRID)
             if r == 0:
-                ax.set_title(f"unit {u}", fontsize=9, color=MUTED)
+                ax.set_title(f"unit {u}", fontsize=9, color=MUTED, pad=5)
             if k == 0:
-                ax.set_ylabel(name, fontsize=10, color=INK, rotation=0, ha="right", va="center")
-    cb = fig.colorbar(im, ax=axes, orientation="horizontal", fraction=0.04, pad=0.04, aspect=50)
-    cb.set_label(f"weight (clipped at ±{lim:g}; red excites the unit, blue inhibits)", color=MUTED, fontsize=9)
+                ax.set_ylabel(label, fontsize=10, color=INK, rotation=0, ha="right", va="center", labelpad=8)
+    # card around the grid with its labels, title and subtitle inside its top (as in Figure 1)
+    fig.canvas.draw()
+    inv, rend = fig.transFigure.inverted(), fig.canvas.get_renderer()
+    bb = [ax.get_tightbbox(rend).transformed(inv) for ax in axes.flat]
+    padx, pady = 0.022, 0.035
+    x0, x1 = min(b.x0 for b in bb) - padx, max(b.x1 for b in bb) + padx
+    y0, gy1 = min(b.y0 for b in bb) - pady, max(b.y1 for b in bb)
+    fig.text((x0 + x1) / 2, gy1 + 0.045, subtitle, ha="center", fontsize=9, color=MUTED)
+    fig.text((x0 + x1) / 2, gy1 + 0.095, title, ha="center", fontsize=12.5, fontweight="semibold", color=INK)
+    card(fig, x0, y0, x1, gy1 + 0.145, matplotlib)
+    # colour scale under the card, like Figure 1's axis name; notes in a card of their own
+    cw = 0.5 * (x1 - x0)
+    cax = fig.add_axes([(x0 + x1 - cw) / 2, y0 - 0.075, cw, 0.022])
+    cb = fig.colorbar(im, cax=cax, orientation="horizontal")
     cb.outline.set_visible(False)
-    cb.ax.tick_params(colors=MUTED, length=0, labelsize=8)
-    if title:
-        fig.suptitle(title, color=INK, fontsize=12, x=0.02, ha="left")
-    fig.savefig(out, facecolor=SURFACE, bbox_inches="tight")
+    cb.ax.tick_params(colors=MUTED, length=0, labelsize=8.5)
+    cb.set_label(f"weight (colours clipped at ±{lim:g})", color=MUTED, fontsize=9.5)
+    fig.canvas.draw()
+    ny1, pad = cax.get_tightbbox(rend).transformed(inv).y0 - 0.05, 0.04
+    notes = [("Reading it", "Each column is one hidden unit. Each row is one input, drawn as the 10 × 10 screen: where"
+                            " the paddle is, where the ball is, and where the ball was a step ago. Red excites the"
+                            " unit, blue inhibits it."),
+             ("Not shown", f"The network has room for 32 hidden units; the other {32 - n} have all-zero weights"
+                           + ("." if bricks else ", and so do the bricks inputs.")
+                           + " The largest few weights are clipped so they don't wash out the rest.")]
+    texts, colw = [], (x1 - x0) / 2
+    for i, (head, body) in enumerate(notes):
+        cx = x0 + i * colw + padx
+        fig.text(cx, ny1 - pad, head, fontsize=8.5, fontweight="semibold", color=INK, va="top")
+        texts.append(fig.text(cx, ny1 - pad - 0.036, textwrap.fill(body, int(colw * fig.get_figwidth() * 14), break_on_hyphens=False),
+                              fontsize=8.5, color=MUTED, va="top", linespacing=1.5))
+    fig.canvas.draw()
+    ny0 = min(t.get_window_extent(rend).transformed(inv).y0 for t in texts) - pad + 0.012
+    card(fig, x0, ny0, x1, ny1, matplotlib)
+    fig.savefig(out, facecolor=BG, bbox_inches="tight", pad_inches=0.3)
 
 
 def main():
@@ -263,10 +306,11 @@ def main():
     h = sub.add_parser("w1")
     h.add_argument("net")
     h.add_argument("out")
-    h.add_argument("--title", default="")
+    h.add_argument("--title", default="", help="default: model, effort and run from the net's folder")
+    h.add_argument("--subtitle", default="")
     a = ap.parse_args()
     if a.cmd == "w1":
-        w1(a.net, a.out, a.title)
+        w1(a.net, a.out, a.title, a.subtitle)
         print(a.out)
     if a.cmd == "dots":
         dots(a.out)
