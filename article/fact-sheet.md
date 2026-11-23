@@ -13,7 +13,7 @@ and `score.json`). "Research" means the sourced findings gathered on 2026-11-22 
 | Astra's network under our scorer | 502.9 (502.88 ± 7.75) | `results/baselines/astra.json` |
 | Two independent scorers | 502.8 and 502.9 | logs repo PR #1 (502.8 ± 7.7); wsplore README (502.9). Research |
 | Astra's reply length | 20,567 output tokens | `lm_understand-logs/exp5_write_from_scratch/runs/breakout/apply.json` |
-| … of which reasoning | about 17,000 | same file; **to be confirmed by the checker** |
+| … of which reasoning | about 17,000 (16,828) | same file; README.md line 46 |
 
 ## Claude results reported online (intro)
 Single Opus 5.5 runs of Experiment 5 Breakout:
@@ -48,7 +48,7 @@ https://huggingface.co/datasets/shawnghu/fable-weight-space-programming. Fable 5
 | … still thinking when cut off | 28 | the other 2 (Sonnet) were writing |
 | Median output tokens, finished xhigh runs | Opus 114,575; Sonnet 109,206 | draft says 115,000 and 109,000 |
 | "more than five times" Astra | 109,206 / 20,567 = 5.3 | |
-| Fable xhigh "full 128,000 every single time" | 10 of 10 cut off while thinking | run.json stop reason; **checker to confirm** |
+| Fable xhigh "hit the 128,000 limit while still thinking every single time" | 10 of 10 | run.json injection, empty answer.md, last block thinking |
 | Haiku high | 9 of 10, median 6.4 (6.37), best 20 (20.17) | |
 | Sonnet high | 10 of 10, median 7.6, best 16 (15.79); median 1.0 min, 7,384 tokens | |
 | Opus high | 10 of 10, median 56 (55.6), best 352 (352.3) | |
@@ -72,5 +72,18 @@ Being recomputed with the Amendment 4 networks; fill in from the new file.
 ## Not checkable by script (from reading the networks and Claude Code)
 - What units in opus-11's first layer do (2 direction units, 8 landing units): from the heatmap `results/figures/w1-opus-11.png`
   and the reply's own description in `runs/breakout/opus/11/answer.md`.
-- Claude Code's continuation messages and "up to three more times": `PROTOCOL.md` (observed in `events.jsonl`).
-- About 650 tokens of Claude Code context: measured from the request's input tokens in `events.jsonl`.
+- Claude Code's continuation behavior, checked in the installed 2.1.330 build (`~/.local/share/claude/versions/2.1.330`):
+  - the retry limit is a constant `bs=3`, next to the cut-reply code (`maxOutputTokensRecoveryCount+1; return g<=bs`): "up to three more times";
+  - the message "Output token limit hit while you were still reasoning … reason much more briefly …" is in the same build.
+  - Our runs received only the "Output token limit hit. Resume directly …" version (37 times in `runs/breakout/*/*/run.json`), and `run.py`
+    stops at the first one.
+- "Hit the 128K limit": cut-off runs have no usage record. The evidence is Claude Code's output-limit message in each
+  run.json plus a final block that is thinking (28 runs) or text (sonnet/01, sonnet/08). Checked by the fact-check agent, 2026-11-23.
+- About 650 tokens of Claude Code context: measured earlier in the session; the checker could not separate it from the prompt
+  in the saved files (about 4,333 cache-creation tokens in all). Reproduce before the paper.
+
+## Fixes from the fact-check (2026-11-23)
+Wording changed in the draft: "tenfold" → "ninefold" (57.2 vs 502.7/510.4); "Sonnet came close once" → "Sonnet's best was 351";
+"Haiku's are no better" → "similar; its best scored 20"; Fable high "best result" → "most reliable result" (Opus xhigh has the
+single highest score); Fable xhigh wording now says it hit the limit while thinking. Still open: the catch-rate table's
+"Opus, best" row is opus/11 (502.7), not the best Opus network (opus/03, 510.4); fix when the recount lands.
