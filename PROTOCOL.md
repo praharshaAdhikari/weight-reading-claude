@@ -164,3 +164,14 @@ No earlier run wrote arithmetic in an index.
 `<model>-<effort>`. Paths inside score.json, the figure file names, the catch-rate file and the docs were updated to
 match. `logs/runs.log` is left as written, so its xhigh lines use the old names (`opus/03` is now `opus-xhigh/03`).
 No run, score or reading rule changed; `scores.png` re-renders byte-identical.
+
+## Amendment 5 (2026-11-24), on the user's go
+Added after seeing the results of every arm above, so this arm is exploratory, not pre-registered.
+- **Why:** max was tried only with Opus (0 of 5 finished). Sonnet is the only other model that ever finished at
+  xhigh (6 of 10, two of them within 1.5K tokens of the cap), so it is the only other model where max could show
+  anything. Haiku and Fable finished 0 of 10 at xhigh, so they are not run at max.
+- **What:** effort max for Sonnet 5.5, 5 runs. Everything else as in the protocol and Amendment 1. Caps: 60% for
+  both usage windows, as in Amendment 4.
+- **Rule, set before the first run:** if at least one of the 5 runs finishes (writes a network), the arm is extended
+  to 10 runs, on the user's go. If none finishes, it stops at 5.
+- **Expected:** most or all runs cut off at the cap; about $1.30 API-equivalent each if they run to the cap.
