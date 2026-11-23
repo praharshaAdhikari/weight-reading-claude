@@ -3,8 +3,8 @@
 A replication of Experiment 5 of [*Sparks of Weight-Space Programming*](https://rikiyat.github.io/blog/weight-space-programming/)
 (Rikiya Takehi, Jayden Teoh, Alex Zhang, Omar Khattab; MIT CSAIL, 2 November 2026) with Claude instead of GPT-6 Astra.
 Each model gets the original prompt, byte for byte, and must write all 20,486 weights of a 600-32-32-6 MinAtar Breakout
-network in one reply, with no tools. 90 runs: Haiku 5.5, Sonnet 5.5, Opus 5.5 and Fable 5.2 at effort `xhigh` and
-`high` (10 each), and Opus 5.5 and Sonnet 5.5 at `max` (5 each).
+network in one reply, with no tools. 105 runs: Haiku 5.5, Sonnet 5.5, Opus 5.5 and Fable 5.2 at effort `xhigh` and
+`high` (10 each), Opus 5.5 and Sonnet 5.5 at `max` (5 each), and Haiku 5.5, Opus 5.5 and Fable 5.2 at `medium` (5 each).
 
 ## What's here
 | Path | What |

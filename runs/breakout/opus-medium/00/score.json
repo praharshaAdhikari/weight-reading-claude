@@ -1,0 +1,35 @@
+{
+ "source": "./runs/breakout/opus-medium/00/answer.md",
+ "game": "breakout",
+ "reading": {
+  "block": true,
+  "cut_off": false,
+  "statements": 111,
+  "applied": 111,
+  "errors": [],
+  "nonzero": {
+   "W1": 796,
+   "b1": 5,
+   "W2": 8,
+   "b2": 4,
+   "W3": 4,
+   "b3": 4
+  },
+  "nonzero_total": 821,
+  "max_abs": {
+   "W1": 90.0,
+   "b1": 7.5,
+   "W2": 3.0,
+   "b2": 3.0,
+   "W3": 8.0,
+   "b3": 40.0
+  }
+ },
+ "mean": 40.13,
+ "se": 1.25,
+ "episodes": 1000,
+ "mean_length": 1016.0,
+ "hit_step_cap": 0,
+ "min": 0.0,
+ "max": 295.0
+}

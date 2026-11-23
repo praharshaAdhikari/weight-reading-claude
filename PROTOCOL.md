@@ -206,3 +206,17 @@ Added after seeing the results of every arm above, so it is exploratory. One Ame
 - **Rule, set before the first run:** extended to 10 runs, on the user's go, if its median at medium is above its
   median at high (55.6). Otherwise it stops at 5.
 - **Expected:** about $1 API-equivalent per run.
+
+**Correction to Amendment 7 (2026-11-24 01:40):** its text says one Amendment 6 run had finished. When it was committed
+(01:29), five had been scored: haiku-medium/00 4.14, /01 5.27, /02 7.78, /03 7.76 and fable-medium/01 9.41
+(`logs/runs.log`). The wording was based on the last lines of the log only. The rule it sets is unchanged.
+
+**Amendments 6 and 7 finished (2026-11-24 01:37):** all 15 runs finished a network; none hit the cap, none was rerun.
+| Arm | Scores (runs 00-04) | Median | Rule threshold (median at high) | Result |
+|---|---|---|---|---|
+| Haiku medium | 4.14, 5.27, 7.78, 7.76, 0.97 | 5.27 | 6.37 | stops at 5 |
+| Opus medium | 40.13, 109.45, 40.93, 37.88, 40.93 | 40.93 | 55.6 | stops at 5 |
+| Fable medium | 88.02, 9.41, 61.29, 13.05, 119.32 | 61.29 | 449.77 | stops at 5 |
+Median output tokens: Haiku 15.4K, Opus 17.3K, Fable 22.9K. API-equivalent cost: $0.05, $1.72 and $5.48 in all
+(Fable came in at about a third of the expected $3.30 per run, as its replies were short). Weekly usage went from
+18% to 19%.

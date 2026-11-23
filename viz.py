@@ -132,12 +132,13 @@ def load_source(source):
     return {k: np.zeros(s, np.float32) for k, s in score.SHAPES.items()} if source == "zero" else score.load_net(source)
 
 
-ARMS = [("haiku-high", "Haiku 5.5 · high"), ("haiku-xhigh", "Haiku 5.5 · xhigh"), ("sonnet-high", "Sonnet 5.5 · high"),
+ARMS = [("haiku-medium", "Haiku 5.5 · medium"), ("opus-medium", "Opus 5.5 · medium"), ("fable-medium", "Fable 5.2 · medium"),
+        ("haiku-high", "Haiku 5.5 · high"), ("haiku-xhigh", "Haiku 5.5 · xhigh"), ("sonnet-high", "Sonnet 5.5 · high"),
         ("sonnet-xhigh", "Sonnet 5.5 · xhigh"), ("opus-high", "Opus 5.5 · high"), ("opus-xhigh", "Opus 5.5 · xhigh"),
         ("opus-max", "Opus 5.5 · max"), ("sonnet-max", "Sonnet 5.5 · max"), ("fable-high", "Fable 5.2 · high"), ("fable-xhigh", "Fable 5.2 · xhigh")]
 MODELS = [("haiku", "Haiku 5.5", "#2a78d6"), ("sonnet", "Sonnet 5.5", "#eb6834"), ("opus", "Opus 5.5", "#1baf7a"),
           ("fable", "Fable 5.2", "#eda100")]  # categorical slots 1-4, in order (dataviz palette, validated)
-EFFORTS = [("high", "^", True), ("xhigh", "o", False), ("max", "D", False)]  # marker, filled
+EFFORTS = [("medium", "s", True), ("high", "^", True), ("xhigh", "o", False), ("max", "D", False)]  # marker, filled
 REFS = [(0.54, "random"), (8.37, "rule"), (25.3, "PPO 500M"), (502.9, "Astra")]
 
 
@@ -228,7 +229,7 @@ def dots(out):
     x0, x1 = boxes[0][0].x0 - L, boxes[1][0].x1 + R
     top, bottom = boxes[0][0].y1 + T, boxes[2][0].y0 - B
     # legend just above the cards; axis name just below them; notes in a full-width card of their own
-    fig.legend(loc="lower center", bbox_to_anchor=(0.5, top + 0.008), ncol=4, frameon=False, fontsize=9.5)
+    fig.legend(loc="lower center", bbox_to_anchor=(0.5, top + 0.008), ncol=5, frameon=False, fontsize=9.5)
     fig.text(0.5, bottom - 0.022, "output tokens, almost all thinking", ha="center", va="top", color=MUTED)
     # notes: one heading + text per column of cards; the card is sized from the drawn text, equal padding all round
     import textwrap

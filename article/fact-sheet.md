@@ -36,7 +36,7 @@ https://huggingface.co/datasets/shawnghu/fable-weight-space-programming. Fable 5
 ## Our runs (all from runs.json unless noted)
 | Claim | Value | Detail |
 |---|---|---|
-| Total runs | 90 | 40 at xhigh, 40 at high, 10 at max (Opus 5, Sonnet 5) |
+| Total runs | 105 | 40 at xhigh, 40 at high, 10 at max (Opus 5, Sonnet 5), 15 at medium (Haiku, Opus, Fable 5 each) |
 | Haiku xhigh | 0 of 10, median 0.54, best 0.54 | |
 | Sonnet xhigh | 6 of 10, median 29 (29.04), best 351 (351.4, sonnet-xhigh/04) | |
 | Opus xhigh | 4 of 10, median 0.54, best 510 (510.4, opus-xhigh/03) | finished: 57.2 (00), 134.2 (10), 502.7 (11), 510.4 (03) |
@@ -54,6 +54,10 @@ https://huggingface.co/datasets/shawnghu/fable-weight-space-programming. Fable 5
 | Opus high | 10 of 10, median 56 (55.6), best 352 (352.3) | |
 | Opus max | 0 of 5 | |
 | Sonnet max | 0 of 5 | Amendment 5, 2026-11-24 |
+| Haiku medium | 5 of 5, median 5.3 (5.27), best 7.8 (7.78); median 15.4K tokens | Amendment 6 |
+| Opus medium | 5 of 5, median 41 (40.93), best 109 (109.45); median 17.3K tokens | Amendment 7 |
+| Fable medium | 5 of 5, median 61 (61.29), best 119 (119.32); median 22.9K tokens | Amendment 6 |
+| Each model's best median setting | Haiku high, Sonnet xhigh, Opus high, Fable high; medium is below high for all three tried | PROTOCOL finish note, 2026-11-24 |
 | Fable high | 9 of 10, median 450 (449.77), best 503 (503.47) | |
 | Fable high, three networks level with Astra | 503.5 (03), 502.2 (05), 500.6 (08) | all within 2 SE of 502.9 |
 | Five Claude networks above 500 | opus-xhigh/03 510.4, fable-high/03 503.5, opus-xhigh/11 502.7, fable-high/05 502.2, fable-high/08 500.6 | |
@@ -118,6 +122,6 @@ opus-xhigh/03 (510.4) for "Opus, best" and adds Fable's best.
 | Sonnet max | 0 of 5 finished; all cut off at the cap, each 0.54; 18.8 to 19.1 min each | `runs/breakout/sonnet-max/*/run.json`, score.json |
 | … still thinking when cut off | 5 of 5 (last block thinking) | events.jsonl |
 | Max across both models tried | 0 of 10 (Opus 0 of 5, Sonnet 0 of 5) | runs.json |
-| Total runs | 90; runs cut off at the cap 42 (30 xhigh, 10 max, 1 Haiku high, 1 Fable high) | runs.json |
+| Total runs | 105 (90 before the medium arms); runs cut off at the cap 42 (30 xhigh, 10 max, 1 Haiku high, 1 Fable high) | runs.json |
 | Weekly usage for the 5 runs | 13% → 16% | `logs/runs.log` |
 | One `api_retry` per run, about 5K thinking tokens in | did not change the outcome (thinking estimate ended 73.5K to 75.6K vs 72.4K for Opus max) | events.jsonl; PROTOCOL.md Amendment 5 |
