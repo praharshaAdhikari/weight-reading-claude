@@ -128,3 +128,11 @@ No result was known when these were changed.
 - Tonight's weekly-usage cap is raised from 97% to 100%, since that usage expires at the 05:45 reset.
 - The batch was restarted to apply this. The four runs in flight were stopped about 3 minutes in, before any
   output, and moved to `runs/_stopped_by_restart/`. They are not counted; their slots are run again.
+
+### 3. 2026-11-23 08:00, after the main batch
+
+- The optional arm is run as planned: 5 runs of Fable 5.2 at effort high and 5 of Opus 5.5 at effort max.
+- The user set both usage caps for this week to 60% (5-hour window and weekly).
+- After the weekly reset, Claude Code's weekly reading stayed at 0%. Measured last night, one weekly point is
+  about $4.70 of API-equivalent usage, so this arm (at most about $35) is around 7 points and cannot reach the cap
+  even if the reading stays wrong.
