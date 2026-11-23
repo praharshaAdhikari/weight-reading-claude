@@ -1,0 +1,432 @@
+<meta name="dash-one-writer">
+<style>
+.rx { display: flex; flex-direction: column; gap: var(--cds-gap-xl); font-family: var(--font-anthropic-sans); color: var(--color-fg); }
+.rx h1 { font-family: var(--font-anthropic-serif); font-weight: 400; font-size: var(--cds-font-size-title); margin: 0; text-wrap: balance; }
+.rx h2 { font-size: var(--cds-font-size-heading); font-weight: var(--cds-font-weight-medium); margin: 0; text-wrap: balance; }
+.rx p { margin: 0; line-height: 1.5; }
+.rx-muted { color: var(--color-fg-muted); font-size: var(--cds-font-size-caption); }
+.rx-sec { display: flex; flex-direction: column; gap: var(--cds-gap-sm); min-width: 0; }
+.rx-card { background: var(--color-panel); border: 1px solid var(--color-border-line); border-radius: var(--cds-radius); padding: var(--cds-pad-lg); min-width: 0; }
+.rx-scroll { overflow-x: auto; }
+.rx table { border-collapse: collapse; width: 100%; font-variant-numeric: tabular-nums; font-size: var(--cds-font-size-body); }
+.rx th { text-align: left; font-weight: var(--cds-font-weight-medium); color: var(--color-fg-muted); font-size: var(--cds-font-size-caption); padding: 6px 10px; border-bottom: 1px solid var(--color-border-line); white-space: nowrap; }
+.rx td { padding: 6px 10px; border-bottom: 1px solid var(--color-border-line); white-space: nowrap; }
+.rx td.num, .rx th.num { text-align: right; }
+.rx tbody tr.rx-click { cursor: pointer; }
+.rx tbody tr.rx-click:hover { background: var(--color-bg); }
+.rx tbody tr.rx-on { outline: 2px solid var(--color-fg); outline-offset: -2px; }
+.rx-chip { display: inline-flex; align-items: center; gap: 6px; }
+.rx-dot { width: 9px; height: 9px; border-radius: 50%; display: inline-block; flex: none; }
+.rx-legend { display: flex; flex-wrap: wrap; gap: var(--cds-gap-sm) var(--cds-gap-lg); font-size: var(--cds-font-size-caption); color: var(--color-fg-muted); }
+.rx-plot { position: relative; min-height: 290px; }
+.rx-panels { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 420px), 1fr)); gap: var(--cds-gap-lg); }
+.rx-panel { min-width: 0; }
+.rx-panel svg { display: block; width: 100%; height: auto; overflow: visible; }
+.rx-plot svg text.rx-ptitle { fill: var(--color-fg); font-size: var(--cds-font-size-body); font-weight: var(--cds-font-weight-medium); }
+.rx-plot svg text { fill: var(--cds-text-secondary); font-size: var(--cds-font-size-caption); font-family: var(--font-anthropic-sans); }
+.rx-tip { position: absolute; pointer-events: none; background: var(--cds-surface-popover); border: 1px solid var(--cds-border); box-shadow: var(--cds-shadow-popover); border-radius: var(--cds-radius); padding: 8px 10px; font-size: var(--cds-font-size-caption); line-height: 1.45; max-width: 260px; z-index: 5; }
+.rx-tip b { color: var(--color-fg); }
+.rx-kv { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: var(--cds-gap-md); }
+.rx-kv div { display: flex; flex-direction: column; gap: 2px; }
+.rx-kv span:last-child { font-variant-numeric: tabular-nums; font-size: var(--cds-font-size-body); }
+.rx-quote { border-left: 3px solid var(--color-border-line); padding-left: var(--cds-pad-md); color: var(--color-fg-muted); line-height: 1.55; max-width: none; white-space: normal; }
+.rx-bar { display: flex; height: 10px; width: 100%; min-width: 120px; border-radius: 3px; overflow: hidden; gap: 2px; }
+.rx-row { display: flex; flex-wrap: wrap; align-items: center; gap: var(--cds-gap-md); justify-content: space-between; }
+</style>
+
+<div class="rx">
+  <header class="rx-sec" id="top">
+    <h1>Breakout Run Explorer</h1>
+    <p><b data-draw="fin" data-source="totals" data-field="finished" data-row="0">—</b> of <b data-draw="tot" data-source="totals" data-field="total" data-row="0">—</b> counted runs finished a network. Every other run hit the 128K output cap and plays at random (0.54). Click any dot or row to read what the run wrote or was thinking when it stopped.</p>
+  </header>
+
+  <section class="rx-sec" id="arms">
+    <h2>How each model and setting did</h2>
+    <p class="rx-muted">Bar: green finished, amber cut off while writing the weights, gray cut off while still thinking. Tokens and cost are known only for runs that ended on their own.</p>
+    <div class="rx-scroll">
+      <table data-source="arms" data-row-key="arm">
+        <thead><tr>
+          <th data-field="label">Model · effort</th>
+          <th>How runs ended</th>
+          <th class="num" data-field="finished">Finished</th>
+          <th class="num" data-field="runs">Runs</th>
+          <th class="num" data-field="median">Median score</th>
+          <th class="num" data-field="best">Best score</th>
+          <th class="num" data-field="median_tokens">Median tokens (finished)</th>
+          <th class="num" data-field="median_minutes">Median minutes</th>
+          <th class="num" data-field="cost">Cost of finished runs</th>
+        </tr></thead>
+        <tbody data-draw="armrows"></tbody>
+      </table>
+    </div>
+  </section>
+
+  <section class="rx-sec" id="catch">
+    <h2>How often each network misses the ball</h2>
+    <p class="rx-muted">Breakout here has one life, so the score is set by how rarely the paddle misses. Counted over 200 extra games per network (seeds 5000–5199, not the scoring seeds); only finished networks scoring above 8. Networks that almost never let the ball come down (one miss, few balls) show a rough rate.</p>
+    <div class="rx-scroll">
+      <table data-source="catch" data-row-key="network">
+        <thead><tr>
+          <th data-field="network">Network</th>
+          <th class="num" data-field="score">Score</th>
+          <th class="num" data-field="catches">Balls returned</th>
+          <th class="num" data-field="misses">Misses</th>
+          <th class="num" data-field="balls_per_miss">One miss per … balls</th>
+        </tr></thead>
+        <tbody data-draw="catchrows"></tbody>
+      </table>
+    </div>
+  </section>
+
+  <section class="rx-sec" id="scatter">
+    <div class="rx-row">
+      <h2>Score against output tokens used</h2>
+      <label class="rx-muted">Show <select class="dash-select" id="rx-arm" aria-label="Model and setting">
+        <option value="">All runs</option>
+        <option value="haiku-xhigh">Haiku 5.5 · xhigh</option>
+        <option value="sonnet-xhigh">Sonnet 5.5 · xhigh</option>
+        <option value="opus-xhigh">Opus 5.5 · xhigh</option>
+        <option value="fable-xhigh">Fable 5.2 · xhigh</option>
+        <option value="haiku-high">Haiku 5.5 · high</option>
+        <option value="sonnet-high">Sonnet 5.5 · high</option>
+        <option value="opus-high">Opus 5.5 · high</option>
+        <option value="fable-high">Fable 5.2 · high</option>
+        <option value="opus-max">Opus 5.5 · max</option>
+      </select></label>
+    </div>
+    <div class="rx-legend">
+      <span class="rx-chip"><svg width="12" height="12" viewBox="-6 -6 12 12" aria-hidden="true"><path d="M0,-5L4.6,3.5L-4.6,3.5Z" fill="currentColor"/></svg>high</span>
+      <span class="rx-chip"><svg width="12" height="12" viewBox="-6 -6 12 12" aria-hidden="true"><circle r="4.2" fill="none" stroke="currentColor" stroke-width="1.6"/></svg>xhigh</span>
+      <span class="rx-chip"><svg width="12" height="12" viewBox="-6 -6 12 12" aria-hidden="true"><path d="M0,-5.2L5.2,0L0,5.2L-5.2,0Z" fill="none" stroke="currentColor" stroke-width="1.6"/></svg>max</span>
+      <span class="rx-chip"><svg width="12" height="12" viewBox="-6 -6 12 12" aria-hidden="true"><path d="M-3.5,-4.6L4.5,0L-3.5,4.6Z" fill="currentColor"/></svg>hit the 128K cap (filled: high, hollow: xhigh or max)</span>
+      <span>Dashed lines, named at the right: random play (0.54), the follow-the-ball rule, PPO after 500M steps, Astra's network</span>
+    </div>
+    <div class="rx-plot" data-draw="plot" data-source="runs references"></div>
+    <p class="rx-muted">One panel per model, all on the same axes. Score is the mean over 1,000 games, on a log scale. A run that hit the 128K output cap has no exact token count and wrote no network (it plays at random, 0.54), so it is drawn as an arrow in the column past the cap, the usual mark for a value cut off at a limit; the number above each stack counts them.</p>
+  </section>
+
+  <section class="rx-sec" id="detail">
+    <h2>Selected run</h2>
+    <div class="rx-card" data-draw="detail" data-source="runs">—</div>
+  </section>
+
+  <section class="rx-sec" id="all">
+    <h2>Every run</h2>
+    <div class="rx-scroll">
+      <table data-source="runs" data-row-key="id">
+        <thead><tr>
+          <th data-field="id">Run</th>
+          <th data-field="effort">Effort</th>
+          <th data-field="ended">How it ended</th>
+          <th class="num" data-field="score">Score</th>
+          <th class="num" data-field="se">± SE</th>
+          <th class="num" data-field="output_tokens">Output tokens</th>
+          <th class="num" data-field="thinking_tokens">Thinking</th>
+          <th class="num" data-field="minutes">Minutes</th>
+          <th class="num" data-field="cost_usd">Cost ($)</th>
+          <th class="num" data-field="statements_read">Statements</th>
+          <th class="num" data-field="game_steps">Steps per game</th>
+          <th class="num" data-field="weekly_pct">Week %</th>
+          <th data-field="started">Started</th>
+        </tr></thead>
+        <tbody data-draw="runrows"></tbody>
+      </table>
+    </div>
+  </section>
+</div>
+
+<script>
+const ARM_ORDER = ['haiku-high', 'haiku-xhigh', 'sonnet-high', 'sonnet-xhigh', 'opus-high', 'opus-xhigh', 'opus-max', 'fable-high', 'fable-xhigh'];
+dash.calc('arms', {
+  inputs: ['runs'],
+  title: 'Per model and setting',
+  description: 'Counts, median and best score per arm; tokens, minutes and cost over runs that ended on their own.',
+  fn: (runs) => ARM_ORDER.map((arm) => {
+    const rs = runs.filter((r) => r.arm === arm);
+    if (!rs.length) return null;
+    const fin = rs.filter((r) => r.ended === 'finished');
+    const known = rs.filter((r) => r.cost_usd != null);
+    return {
+      arm, label: rs[0].model + ' · ' + rs[0].effort, runs: rs.length, finished: fin.length,
+      writing: rs.filter((r) => r.ended === 'cut off while writing').length,
+      thinking: rs.filter((r) => r.ended === 'cut off while thinking').length,
+      median: d3.median(rs, (r) => r.score), best: d3.max(rs, (r) => r.score),
+      median_tokens: fin.length ? d3.median(fin, (r) => r.output_tokens) : null,
+      median_minutes: d3.median(rs, (r) => r.minutes),
+      cost: known.length ? Math.round(d3.sum(known, (r) => r.cost_usd) * 100) / 100 : null,
+    };
+  }).filter(Boolean),
+});
+dash.calc('totals', {
+  inputs: ['runs'],
+  title: 'Totals',
+  description: 'How many counted runs finished a network.',
+  fn: (runs) => [{ finished: runs.filter((r) => r.ended === 'finished').length, total: runs.length }],
+});
+
+window.rx = { sel: null, arm: '' };
+window.rxModelColor = (m) => dash.colors[{ 'Haiku 5.5': 0, 'Sonnet 5.5': 1, 'Opus 5.5': 2, 'Fable 5.2': 3 }[m] ?? 4];
+window.rxEndColor = (e) => e === 'finished' ? 'var(--color-ok)' : e === 'cut off while writing' ? 'var(--color-warn)' : 'var(--color-fg-muted)';
+window.rxFmt = {
+  score: (v) => v == null ? '—' : v < 10 ? v.toFixed(2) : v.toFixed(1),
+  int: (v) => v == null ? '—' : d3.format(',')(Math.round(v)),
+  money: (v) => v == null ? '—' : '$' + v.toFixed(2),
+};
+window.rxSelect = (id) => { rx.sel = id; dash.draw('detail'); dash.draw('plot'); dash.draw('runrows'); };
+
+document.querySelectorAll('#rx-arm').forEach((sel) => sel.addEventListener('change', () => {
+  rx.arm = sel.value; dash.draw('plot'); dash.draw('runrows');
+}));
+</script>
+
+<script>
+const one = (name, field, fmt) => dash.draw(name, (el) => {
+  const t = dash.data('totals');
+  el.textContent = t.status === 'ok' && t.data[0] ? fmt(t.data[0][field]) : '—';
+});
+one('fin', 'finished', String);
+one('tot', 'total', String);
+
+dash.draw('armrows', (tb) => {
+  const a = dash.data('arms');
+  tb.replaceChildren();
+  if (a.status !== 'ok') {
+    const tr = tb.insertRow(), td = tr.insertCell(); td.colSpan = 9;
+    td.textContent = a.status === 'error' ? 'The run data failed to load.' : '—';
+    return;
+  }
+  for (const r of a.data) {
+    const tr = tb.insertRow(); tr.dataset.key = r.arm;
+    const c = (txt, num) => { const td = tr.insertCell(); td.textContent = txt; if (num) td.className = 'num'; return td; };
+    const lab = c(''); const chip = document.createElement('span'); chip.className = 'rx-chip';
+    const dot = document.createElement('i'); dot.className = 'rx-dot'; dot.style.background = rxModelColor(r.label.split(' · ')[0]);
+    chip.append(dot, r.label); lab.append(chip);
+    const barTd = c(''); const bar = document.createElement('div'); bar.className = 'rx-bar';
+    bar.setAttribute('role', 'img');
+    bar.setAttribute('aria-label', `${r.finished} finished, ${r.writing} cut off while writing, ${r.thinking} cut off while thinking`);
+    for (const [n, e] of [[r.finished, 'finished'], [r.writing, 'cut off while writing'], [r.thinking, 'cut off while thinking']]) {
+      if (!n) continue;
+      const s = document.createElement('span'); s.style.flex = String(n); s.style.background = rxEndColor(e); bar.append(s);
+    }
+    barTd.append(bar);
+    c(String(r.finished), true); c(String(r.runs), true);
+    c(rxFmt.score(r.median), true); c(rxFmt.score(r.best), true);
+    c(rxFmt.int(r.median_tokens), true); c(r.median_minutes.toFixed(1), true); c(rxFmt.money(r.cost), true);
+  }
+});
+
+dash.draw('catchrows', (tb) => {
+  const d = dash.data('catch');
+  tb.replaceChildren();
+  if (d.status !== 'ok') {
+    const tr = tb.insertRow(), td = tr.insertCell(); td.colSpan = 5;
+    td.textContent = d.status === 'error' ? 'The catch-rate data failed to load.' : '—';
+    return;
+  }
+  const names = { rule: 'Ball-follow rule (baseline)', astra: 'GPT-6 Astra (published)' };
+  const rows = [...d.data].sort((a, b) => (b.balls_per_miss ?? Infinity) - (a.balls_per_miss ?? Infinity));
+  for (const r of rows) {
+    const tr = tb.insertRow(); tr.dataset.key = r.network;
+    const c = (txt, num) => { const td = tr.insertCell(); td.textContent = txt; if (num) td.className = 'num'; return td; };
+    c(names[r.network] || r.network);
+    c(rxFmt.score(r.score), true);
+    c(rxFmt.int(r.catches), true); c(rxFmt.int(r.misses), true);
+    c(r.balls_per_miss == null ? 'no miss' : rxFmt.int(r.balls_per_miss), true);
+  }
+});
+
+dash.draw('runrows', (tb) => {
+  const d = dash.data('runs');
+  tb.replaceChildren();
+  if (d.status !== 'ok') {
+    const tr = tb.insertRow(), td = tr.insertCell(); td.colSpan = 13;
+    td.textContent = d.status === 'error' ? 'The run data failed to load.' : '—';
+    return;
+  }
+  for (const r of d.data.filter((r) => !rx.arm || r.arm === rx.arm)) {
+    const tr = tb.insertRow(); tr.dataset.key = r.id; tr.className = 'rx-click' + (r.id === rx.sel ? ' rx-on' : '');
+    tr.tabIndex = 0;
+    tr.addEventListener('click', () => rxSelect(r.id));
+    tr.addEventListener('keydown', (ev) => { if (ev.key === 'Enter') rxSelect(r.id); });
+    const c = (txt, num) => { const td = tr.insertCell(); td.textContent = txt; if (num) td.className = 'num'; return td; };
+    const idTd = c(''); const chip = document.createElement('span'); chip.className = 'rx-chip';
+    const dot = document.createElement('i'); dot.className = 'rx-dot'; dot.style.background = rxModelColor(r.model);
+    chip.append(dot, r.id); idTd.append(chip);
+    c(r.effort);
+    const e = c(''); const ec = document.createElement('span'); ec.className = 'rx-chip';
+    const ed = document.createElement('i'); ed.className = 'rx-dot'; ed.style.background = rxEndColor(r.ended);
+    ec.append(ed, r.ended); e.append(ec);
+    c(rxFmt.score(r.score), true); c(r.se.toFixed(2), true);
+    c(r.output_tokens == null ? '128K cap' : rxFmt.int(r.output_tokens), true);
+    c(rxFmt.int(r.thinking_tokens), true); c(r.minutes.toFixed(1), true);
+    c(r.cost_usd == null ? '—' : r.cost_usd.toFixed(2), true);
+    c(r.statements_found ? `${r.statements_read}/${r.statements_found}` : '—', true);
+    c(r.game_steps.toFixed(1), true); c(String(r.weekly_pct), true); c(r.started);
+  }
+});
+</script>
+
+<script>
+dash.draw('plot', {
+  mount(el) {
+    const grid = document.createElement('div'); grid.className = 'rx-panels';
+    const tip = document.createElement('div'); tip.className = 'rx-tip'; tip.hidden = true;
+    el.append(grid, tip);
+    return { grid, tip };
+  },
+  update(el, { grid, tip }) {
+    const d = dash.data('runs'), refs = dash.data('references');
+    grid.replaceChildren(); tip.hidden = true;
+    if (d.status !== 'ok') {
+      const p = document.createElement('p'); p.className = 'rx-muted';
+      p.textContent = d.status === 'error' ? 'The run data failed to load.' : '—';
+      grid.append(p);
+      return;
+    }
+    const MODELS = ['Haiku 5.5', 'Sonnet 5.5', 'Opus 5.5', 'Fable 5.2'];
+    const EFFORTS = ['high', 'xhigh', 'max'];
+    const SHORT = { 'Random play (empty network)': 'random', 'Follow-the-ball rule': 'rule 8.4', 'PPO, 500M steps': 'PPO 25', 'GPT-6 Astra (our scorer)': 'Astra 503' };
+    const shape = { high: d3.symbolTriangle, xhigh: d3.symbolCircle, max: d3.symbolDiamond };
+    const H = 290, m = { t: 34, r: 66, b: 36, l: 38 }, cap = 72; // m.r holds the reference labels
+    const y0 = d3.scaleLog().domain([0.3, 900]).range([H - m.b, m.t]);
+    const y = (v) => y0(Math.max(v, 0.3)); // a 0.00 score (sonnet-high/04) sits on the axis floor
+    const show = (r) => !rx.arm || r.arm === rx.arm;
+    const fill = (r) => r.effort === 'high' ? rxModelColor(r.model) : 'var(--color-panel)';
+
+    const place = (ev, r) => {
+      tip.replaceChildren();
+      const b = document.createElement('b'); b.textContent = `${r.model} · ${r.effort} · run ${r.run}`;
+      const lines = [
+        `Score ${rxFmt.score(r.score)} ± ${r.se.toFixed(2)}`,
+        r.ended,
+        r.output_tokens == null ? 'Output: hit the 128K cap' : `Output ${rxFmt.int(r.output_tokens)} (thinking ${rxFmt.int(r.thinking_tokens)})`,
+        `${r.minutes.toFixed(1)} min${r.cost_usd != null ? ' · $' + r.cost_usd.toFixed(2) : ''}`,
+        'Click for details',
+      ];
+      tip.append(b, ...lines.map((t) => { const s = document.createElement('div'); s.textContent = t; return s; }));
+      tip.hidden = false;
+      const [px, py] = d3.pointer(ev, el);
+      const tw = tip.offsetWidth, th = tip.offsetHeight;
+      tip.style.left = Math.max(0, Math.min(px + 12, el.clientWidth - tw)) + 'px';
+      tip.style.top = Math.max(0, py - th - 10) + 'px';
+    };
+
+    // make every panel before measuring, so the grid has settled its columns
+    const panels = MODELS.map((model) => [model, d.data.filter((r) => r.model === model)]).filter(([, rs]) => rs.length)
+      .map(([model, rs]) => { const box = document.createElement('div'); box.className = 'rx-panel'; grid.append(box); return [model, rs, box]; });
+    for (const [model, rs, box] of panels) {
+      const W = box.clientWidth || 300;
+      const x1 = W - m.r - cap - 12, c0 = W - m.r - cap, c1 = W - m.r;
+      const x = d3.scaleLinear().domain([0, 128000]).range([m.l, x1]);
+      const fin = rs.filter((r) => r.output_tokens != null), cut = rs.filter((r) => r.output_tokens == null);
+      const counts = EFFORTS.map((e) => {
+        const a = rs.filter((r) => r.effort === e);
+        return a.length ? `${e} ${a.filter((r) => r.ended === 'finished').length}/${a.length}` : null;
+      }).filter(Boolean).join(' · ');
+      const svg = d3.select(box).append('svg').attr('viewBox', `0 0 ${W} ${H}`).attr('role', 'img')
+        .attr('aria-label', `${model}: score on a log scale against output tokens; finished networks per setting ${counts}`);
+
+      svg.append('circle').attr('cx', 5).attr('cy', 10).attr('r', 4.5).style('fill', rxModelColor(model));
+      svg.append('text').attr('class', 'rx-ptitle').attr('x', 15).attr('y', 14).text(model);
+      svg.append('text').attr('x', 15).attr('y', 28).text(`finished ${counts}`);
+
+      svg.append('g').selectAll('line').data([0.5, 1, 5, 10, 50, 100, 500]).join('line')
+        .attr('x1', m.l).attr('x2', x1).attr('y1', (v) => y(v)).attr('y2', (v) => y(v))
+        .style('stroke', 'var(--cds-chart-grid)');
+      svg.append('g').attr('transform', `translate(${m.l},0)`)
+        .call(d3.axisLeft(y0).tickValues([0.5, 1, 5, 10, 50, 100, 500]).tickFormat(d3.format('~g')).tickSize(0).tickPadding(6))
+        .call((g) => g.select('.domain').remove());
+      const xt = x1 - m.l < 260 ? [0, 64000, 128000] : [0, 32000, 64000, 96000, 128000];
+      svg.append('g').attr('transform', `translate(0,${H - m.b})`)
+        .call(d3.axisBottom(x).tickValues(xt).tickFormat((v) => v ? v / 1000 + 'K' : '0').tickSizeOuter(0))
+        .call((g) => g.select('.domain').style('stroke', 'var(--cds-chart-axis)'))
+        .call((g) => g.selectAll('.tick line').style('stroke', 'var(--cds-chart-axis)'));
+      svg.append('text').attr('x', (m.l + x1) / 2).attr('y', H - 4).attr('text-anchor', 'middle').text('output tokens');
+
+      svg.append('rect').attr('x', c0).attr('y', m.t).attr('width', cap).attr('height', H - m.b - m.t)
+        .style('fill', 'var(--color-bg)').style('stroke', 'var(--color-border-line)');
+      svg.append('text').attr('x', (c0 + c1) / 2).attr('y', H - m.b + 15).attr('text-anchor', 'middle').text('hit 128K');
+
+      if (refs.status === 'ok') {
+        const g = svg.append('g');
+        for (const r of refs.data) {
+          g.append('line').attr('x1', m.l).attr('x2', c1).attr('y1', y(r.score)).attr('y2', y(r.score))
+            .style('stroke', 'var(--cds-chart-reference)').style('stroke-dasharray', '5 4');
+          g.append('text').attr('x', c1 + 5).attr('y', y(r.score) + 4).text(SHORT[r.name] ?? r.name);
+        }
+      }
+
+      // cut-off runs: one stack per setting in the cap column, five arrows to a row, counted above
+      const pos = new Map();
+      let row = 0;
+      for (const e of EFFORTS) {
+        const g = cut.filter((r) => r.effort === e);
+        if (!g.length) continue;
+        g.forEach((r, i) => pos.set(r.id, [c0 + 12 + (i % 5) * 12, y(r.score) - 2 - (row + Math.floor(i / 5)) * 12]));
+        row += Math.ceil(g.length / 5);
+        svg.append('text').attr('x', (c0 + c1) / 2).attr('y', y(0.54) - row * 12 + 1).attr('text-anchor', 'middle')
+          .text(`${g.length} ${e}`);
+        row += 1.5;
+      }
+      fin.forEach((r) => pos.set(r.id, [x(r.output_tokens), y(r.score)]));
+
+      svg.append('g').selectAll('path').data([...fin, ...cut], (r) => r.id).join('path')
+        .attr('transform', (r) => `translate(${pos.get(r.id)})` + (r.output_tokens == null ? ' rotate(90)' : ''))
+        .attr('d', (r) => d3.symbol(r.output_tokens == null ? d3.symbolTriangle : shape[r.effort], r.id === rx.sel ? 150 : r.output_tokens == null ? 46 : 64)())
+        .style('fill', fill)
+        .style('stroke', (r) => r.id === rx.sel ? 'var(--color-fg)' : rxModelColor(r.model))
+        .style('stroke-width', (r) => r.id === rx.sel ? 2.5 : 1.6)
+        .style('opacity', (r) => show(r) ? 1 : 0.12)
+        .style('cursor', 'pointer')
+        .attr('tabindex', 0).attr('aria-label', (r) => `${r.id}: ${rxFmt.score(r.score)}`)
+        .on('pointerenter pointermove', place).on('pointerleave', () => { tip.hidden = true; })
+        .on('click', (ev, r) => rxSelect(r.id))
+        .on('keydown', (ev, r) => { if (ev.key === 'Enter') rxSelect(r.id); });
+    }
+  },
+});
+
+dash.draw('detail', (el) => {
+  const d = dash.data('runs');
+  el.replaceChildren();
+  if (d.status !== 'ok') { el.textContent = d.status === 'error' ? 'The run data failed to load.' : '—'; return; }
+  const best = d.data.reduce((a, b) => (b.score > a.score ? b : a));
+  const r = d.data.find((x) => x.id === rx.sel) || best;
+  const w = 'id=' + r.id;
+  const h = document.createElement('h3'); h.style.margin = '0 0 var(--cds-gap-md)';
+  h.textContent = `${r.model} · ${r.effort} · run ${r.run}` + (rx.sel ? '' : ' (best run; click another to switch)');
+  const kv = document.createElement('div'); kv.className = 'rx-kv';
+  const item = (label, field, text) => {
+    const box = document.createElement('div');
+    const l = document.createElement('span'); l.className = 'rx-muted'; l.textContent = label;
+    const v = document.createElement('span'); v.textContent = text;
+    if (field) { v.dataset.source = 'runs'; v.dataset.field = field; v.dataset.where = w; }
+    box.append(l, v); kv.append(box);
+  };
+  item('How it ended', 'ended', r.ended);
+  item('Score (1,000 games)', 'score', rxFmt.score(r.score));
+  item('Standard error', 'se', r.se.toFixed(2));
+  item('Best single game', 'best_game', String(r.best_game));
+  item('Steps per game', 'game_steps', r.game_steps.toFixed(1));
+  item('Games at the 10K-step cap', 'games_at_step_cap', String(r.games_at_step_cap));
+  item('Output tokens', r.output_tokens == null ? null : 'output_tokens', r.output_tokens == null ? '128K cap' : rxFmt.int(r.output_tokens));
+  item('Thinking tokens', r.thinking_tokens == null ? null : 'thinking_tokens', rxFmt.int(r.thinking_tokens));
+  item('Answer tokens', r.answer_tokens == null ? null : 'answer_tokens', rxFmt.int(r.answer_tokens));
+  item('Minutes', 'minutes', r.minutes.toFixed(1));
+  item('API-equivalent cost', r.cost_usd == null ? null : 'cost_usd', rxFmt.money(r.cost_usd));
+  item('Statements read', r.statements_found ? 'statements_read' : null, r.statements_found ? `${r.statements_read} of ${r.statements_found}` : 'none');
+  item('Non-zero weights', 'nonzero_weights', rxFmt.int(r.nonzero_weights));
+  item('Started', 'started', r.started);
+  item('Weekly usage at end', 'weekly_pct', r.weekly_pct + '%');
+  const parts = [h, kv];
+  const addQuote = (label, text) => {
+    if (!text) return;
+    const l = document.createElement('p'); l.className = 'rx-muted'; l.style.marginTop = 'var(--cds-gap-lg)'; l.textContent = label;
+    const q = document.createElement('blockquote'); q.className = 'rx-quote'; q.style.margin = 'var(--cds-gap-xs) 0 0'; q.textContent = text;
+    parts.push(l, q);
+  };
+  addQuote('How the reply describes its network', r.said);
+  addQuote('The last of its thinking before it was cut off', r.last_thought);
+  el.append(...parts);
+});
+</script>
