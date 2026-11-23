@@ -193,3 +193,16 @@ Added after seeing the results of every arm above, so these arms are exploratory
 - **Rule, set before the first run:** a model's arm is extended to 10 runs, on the user's go, if its median at medium
   is above its median at high (Haiku 6.37, Fable 449.77). Otherwise it stops at 5.
 - **Expected:** Fable about $3.30 and about 1 weekly point per run; Haiku about $0.04 per run.
+
+## Amendment 7 (2026-11-24), on the user's go, while Amendment 6 was running
+Added after seeing the results of every arm above, so it is exploratory. One Amendment 6 run had finished
+(haiku-medium/03, 7.76); no Fable or Opus medium result was known.
+- **Why:** Amendment 6 says Opus got worse from xhigh to high. That holds for its best network (510 → 352) but not for
+  its median (0.54 → 55.6). By median, Opus did best at high, the lowest effort tried, as Haiku and Fable did.
+  At high it used a median of 52K tokens, so medium still leaves room. Sonnet stays out: it is worse at high on both
+  median and best, and used a median of 7.4K tokens there.
+- **What:** effort medium for Opus 5.5, 5 runs, run alongside Amendment 6. Everything else as in the protocol and
+  Amendment 1. Caps: 60% for both usage windows.
+- **Rule, set before the first run:** extended to 10 runs, on the user's go, if its median at medium is above its
+  median at high (55.6). Otherwise it stops at 5.
+- **Expected:** about $1 API-equivalent per run.
