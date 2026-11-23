@@ -210,7 +210,8 @@ def dots(out):
         ax.tick_params(labelbottom=True, labelleft=True)
     # axis names once for the figure, outside the cards, so all four cards hold the same things
     fig.text(0.012, 0.53, "score, mean of 1,000 games (log)", rotation=90, va="center", color=MUTED)
-    for e, mk, f in EFFORTS:
+    drawn = {e for key, _, _ in MODELS for e, _, _ in EFFORTS if any(r["tokens"] for r in counted_runs(f"{key}-{e}"))}
+    for e, mk, f in [t for t in EFFORTS if t[0] in drawn]:  # no legend marker for a setting that never finished (max)
         axs[0, 0].scatter([], [], marker=mk, edgecolors=INK, facecolors=INK if f else CARD, s=46, linewidths=1.4,
                           label=e)
     axs[0, 0].scatter([], [], marker=">", edgecolors=INK, facecolors=INK, s=34, label="cut off at the cap (no network)")
@@ -229,7 +230,7 @@ def dots(out):
     x0, x1 = boxes[0][0].x0 - L, boxes[1][0].x1 + R
     top, bottom = boxes[0][0].y1 + T, boxes[2][0].y0 - B
     # legend just above the cards; axis name just below them; notes in a full-width card of their own
-    fig.legend(loc="lower center", bbox_to_anchor=(0.5, top + 0.008), ncol=5, frameon=False, fontsize=9.5)
+    fig.legend(loc="lower center", bbox_to_anchor=(0.5, top + 0.008), ncol=4, frameon=False, fontsize=9.5)
     fig.text(0.5, bottom - 0.022, "output tokens, almost all thinking", ha="center", va="top", color=MUTED)
     # notes: one heading + text per column of cards; the card is sized from the drawn text, equal padding all round
     import textwrap
