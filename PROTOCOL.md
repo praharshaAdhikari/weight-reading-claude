@@ -182,3 +182,14 @@ Each run logged one `api_retry` about 5K estimated thinking tokens in (error "un
 run had one. The thinking-token estimate kept counting through it and ended at 73.5K to 75.6K, as Opus at max did
 with no retry (72.4K), and each run ended at Claude Code's "Output token limit hit" follow-up. The cut-offs are the
 model's, not the retry's, so all five count.
+
+## Amendment 6 (2026-11-24), on the user's go
+Added after seeing the results of every arm above, so these arms are exploratory, not pre-registered.
+- **Why:** Haiku and Fable did best at high, the lowest effort tried for them (Haiku 9 of 10, median 6.4; Fable 9 of 10,
+  median 450). Medium is the next step down, so it tells whether high is their best setting or only the lowest tried.
+  Sonnet and Opus already got worse going from xhigh down to high, so they are not run at medium. Low is not run.
+- **What:** effort medium for Haiku 5.5 and Fable 5.2, 5 runs each. Everything else as in the protocol and
+  Amendment 1. Caps: 60% for both usage windows.
+- **Rule, set before the first run:** a model's arm is extended to 10 runs, on the user's go, if its median at medium
+  is above its median at high (Haiku 6.37, Fable 449.77). Otherwise it stops at 5.
+- **Expected:** Fable about $3.30 and about 1 weekly point per run; Haiku about $0.04 per run.
