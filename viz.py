@@ -112,10 +112,12 @@ def dots(out):
     matplotlib.use("Agg")
     import matplotlib.pyplot as plt
     from matplotlib import font_manager
-    font_manager.fontManager.addfont("/usr/share/fonts/google-noto-vf/NotoSans[wght].ttf")
-    plt.rcParams.update({"font.family": "Noto Sans", "font.size": 10.5, "axes.edgecolor": GRID,
+    for w in ("Regular", "Semibold"):  # static Open Sans (Google Fonts); unhinted text draws smoother in Agg
+        font_manager.fontManager.addfont(f"/usr/share/fonts/open-sans/OpenSans-{w}.ttf")
+    plt.rcParams.update({"font.family": "Open Sans", "font.size": 10.5, "axes.edgecolor": GRID,
+                         "text.hinting": "no_hinting", "text.hinting_factor": 1,
                          "xtick.color": MUTED, "ytick.color": MUTED, "axes.labelcolor": MUTED})
-    fig, axs = plt.subplots(2, 2, figsize=(12, 8.6), dpi=200, facecolor=SURFACE, sharex=True, sharey=True,
+    fig, axs = plt.subplots(2, 2, figsize=(12, 9.2), dpi=200, facecolor=SURFACE, sharex=True, sharey=True,
                             gridspec_kw={"hspace": 0.42, "wspace": 0.12})
     CAP0, CAP1 = 134, 166  # the column past the cap, in thousands of tokens
     for ax, (key, model, color) in zip(axs.flat, MODELS):
@@ -137,8 +139,8 @@ def dots(out):
             if ax in axs[:, 1]:
                 ax.text(CAP1 + 2, v, name, va="center", fontsize=8.5, color=MUTED, clip_on=False)
         counts = " · ".join(f"{e} {sum(r['kind'] == 'wrote' for r in runs)}/{len(runs)}" for e, _, _, runs in arms)
-        ax.set_title(f"{model}", loc="left", fontsize=12, color=INK, pad=20)
-        ax.text(0, 1.02, f"finished: {counts}", transform=ax.transAxes, fontsize=9, color=MUTED)
+        ax.set_title(model, loc="center", fontsize=12.5, fontweight="semibold", color=INK, pad=20)
+        ax.text(0.5, 1.02, f"finished: {counts}", transform=ax.transAxes, ha="center", fontsize=9, color=MUTED)
         m = dict(s=46, zorder=3, linewidths=1.4)
         fin = [(e, mk, f, r) for e, mk, f, runs in arms for r in runs if r["tokens"] is not None]
         for e, mk, f, r in fin:
@@ -173,10 +175,14 @@ def dots(out):
                           label=e)
     axs[0, 0].scatter([], [], marker=">", edgecolors=INK, facecolors=INK, s=34, label="cut off at the cap (no network)")
     fig.legend(loc="upper center", bbox_to_anchor=(0.5, 0.995), ncol=4, frameon=False, fontsize=9.5)
-    fig.text(0.01, 0.005, "Each mark is one run. A run cut off at the cap wrote no network and plays as the all-zero"
-             " network (random play, 0.54).\nDashed lines: random, the follow-the-ball rule, PPO after 500M steps,"
-             " Astra. Claude via claude -p, one reply; MinAtar Breakout.", fontsize=8, color=MUTED)
-    fig.subplots_adjust(left=0.07, right=0.93, top=0.89, bottom=0.11)
+    # notes: their own band under a rule, apart from the plots
+    fig.add_artist(matplotlib.lines.Line2D([0.03, 0.97], [0.085, 0.085], color=GRID, lw=0.8))
+    fig.text(0.03, 0.068, "Notes", fontsize=8.5, fontweight="semibold", color=INK, va="top")
+    fig.text(0.03, 0.045, "Each mark is one run. A run cut off at the cap wrote no network and plays as the all-zero"
+             " network (random play, 0.54).\nDashed lines: random play, the follow-the-ball rule, PPO after 500M"
+             " steps, GPT-6 Astra. Claude via claude -p, one reply; MinAtar Breakout.", fontsize=8, color=MUTED,
+             va="top", linespacing=1.5)
+    fig.subplots_adjust(left=0.07, right=0.93, top=0.89, bottom=0.165)
     fig.savefig(out, facecolor=SURFACE)
 
 
