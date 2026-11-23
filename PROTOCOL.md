@@ -149,3 +149,10 @@ Added after seeing the results of every arm above, so these arms are exploratory
 - **Expected usage:** about 10 weekly points (about $45 of API-equivalent cost).
 - 12:12: the user raised the 5-hour cap to 95% for this batch (the window resets at 12:55). Weekly cap unchanged at 60%.
   The batch was paused with no run in progress, so the restart lost nothing.
+
+## Note (2026-11-23 12:35): arithmetic inside an index
+sonnet-high/04 wrote 18 statements like `W1[6*1+3:600:60, 0] = 6`, copying the form of the prompt's own hint
+("rows c*6+ch : 600 : 60"). The prompt asks for numbers only, and the reader, unchanged since Amendment 1, skips
+these statements as unreadable. The official score stays 0.00 (24 of 42 statements read). As a sensitivity check,
+not a rule change: with the arithmetic worked out, all 42 statements read and the network scores 5.76 ± 0.20.
+No earlier run wrote arithmetic in an index.
