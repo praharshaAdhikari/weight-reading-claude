@@ -195,10 +195,14 @@ def dots(out):
     ny0, ny1 = 0.022, bottom - 0.068
     fig.patches.append(matplotlib.patches.FancyBboxPatch((x0, ny0), x1 - x0, ny1 - ny0, **card))
     fig.text(x0 + padx, ny1 - 0.016, "Notes", fontsize=8.5, fontweight="semibold", color=INK, va="top")
-    fig.text(x0 + padx, ny1 - 0.040, "Each mark is one run. A run cut off at the cap wrote no network and plays as"
-             " the all-zero network (random play, 0.54).\nDashed lines: random play, the follow-the-ball rule, PPO"
-             " after 500M steps, GPT-6 Astra. Claude via claude -p, one reply; MinAtar Breakout.", fontsize=8,
-             color=MUTED, va="top", linespacing=1.5)
+    import textwrap  # two notes side by side, each under its column of cards
+    notes = ["Each mark is one run. A run cut off at the cap wrote no network and plays as the all-zero network"
+             " (random play, 0.54).",
+             "Dashed lines: random play, the follow-the-ball rule, PPO after 500M steps, GPT-6\u00a0Astra."
+             " Claude via claude -p, one reply; MinAtar Breakout."]
+    for cx, note in zip((x0, boxes[1][0].x0 - L), notes):
+        fig.text(cx + padx, ny1 - 0.040, textwrap.fill(note, 92, break_on_hyphens=False), fontsize=8.5, color=MUTED, va="top",
+                 linespacing=1.5)
     fig.savefig(out, facecolor=BG)
 
 
